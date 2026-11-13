@@ -60,7 +60,7 @@ export const confirm = mutation({
   args: { token: v.string(), docId: v.id('documents'), facts: factsValidator },
   handler: async (ctx, { token, docId, facts }) => {
     const doc = await ctx.db.get(docId);
-    if (!doc) throw new ConvexError('Document not found.');
+    if (!doc?.caseId) throw new ConvexError('Document not found.');
     const { case: c } = await requireClientCase(ctx, token, doc.caseId);
     if (c.status !== 'draft') throw new ConvexError('This case has already been sent to an adviser.');
     const merged = mergeFacts(c, sanitiseFacts(facts), 'document');
@@ -74,7 +74,7 @@ export const remove = mutation({
   args: { token: v.string(), docId: v.id('documents') },
   handler: async (ctx, { token, docId }) => {
     const doc = await ctx.db.get(docId);
-    if (!doc) return;
+    if (!doc?.caseId) return;
     await requireClientCase(ctx, token, doc.caseId);
     await ctx.storage.delete(doc.storageId);
     await ctx.db.delete(docId);

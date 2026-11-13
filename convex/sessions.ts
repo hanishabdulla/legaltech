@@ -98,3 +98,37 @@ export const staffSignOut = mutation({
     if (session) await ctx.db.delete(session._id);
   },
 });
+
+// ---------- MVP 2: Remedy lawyer and partner-firm sign-in (demo) ----------
+
+export const REMEDY_DEMO_CODE = 'REMEDY';
+
+export const remedyStaffSignIn = mutation({
+  args: {
+    name: v.string(),
+    code: v.string(),
+    role: v.union(v.literal('lawyer'), v.literal('firm')),
+    firmId: v.optional(v.id('partnerFirms')),
+  },
+  handler: async (ctx, { name, code, role, firmId }) => {
+    if (code.trim().toUpperCase() !== REMEDY_DEMO_CODE) throw new ConvexError('That access code isn’t right.');
+    if (!name.trim()) throw new ConvexError('Please enter your name.');
+    let organisation = 'Remedy';
+    if (role === 'firm') {
+      const firm = firmId ? await ctx.db.get(firmId) : null;
+      if (!firm || !firm.active) throw new ConvexError('Please choose your firm.');
+      organisation = firm.name;
+    }
+    const staffId = await ctx.db.insert('staff', {
+      name: name.trim().slice(0, 60),
+      organisation,
+      role,
+      firmId: role === 'firm' ? firmId : undefined,
+      createdAt: Date.now(),
+    });
+    const token = newToken();
+    await ctx.db.insert('staffSessions', { staffId, sessionHash: await sha256(token), createdAt: Date.now() });
+    await audit(ctx, { actor: `staff:${staffId}`, event: 'staff_signed_in', detail: { role } });
+    return token;
+  },
+});

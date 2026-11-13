@@ -3,6 +3,9 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 
 const CLIENT_KEY = 'cc.clientToken';
 const STAFF_KEY = 'cc.staffToken';
+const BUSINESS_KEY = 'remedy.businessToken';
+const LAWYER_KEY = 'remedy.lawyerToken';
+const FIRM_KEY = 'remedy.firmToken';
 
 /**
  * Two independent demo sessions on one device: an anonymous client and an
@@ -14,6 +17,13 @@ type Session = {
   staffToken: string | null;
   setClientToken: (t: string | null) => Promise<void>;
   setStaffToken: (t: string | null) => Promise<void>;
+  /** MVP 2 (Remedy): business client, Remedy lawyer and partner-firm user, kept apart so three tabs can demo the loop. */
+  businessToken: string | null;
+  lawyerToken: string | null;
+  firmToken: string | null;
+  setBusinessToken: (t: string | null) => Promise<void>;
+  setLawyerToken: (t: string | null) => Promise<void>;
+  setFirmToken: (t: string | null) => Promise<void>;
 };
 
 const SessionContext = createContext<Session | null>(null);
@@ -31,12 +41,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [clientToken, setClient] = useState<string | null>(null);
   const [staffToken, setStaff] = useState<string | null>(null);
+  const [businessToken, setBusiness] = useState<string | null>(null);
+  const [lawyerToken, setLawyer] = useState<string | null>(null);
+  const [firmToken, setFirm] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([AsyncStorage.getItem(CLIENT_KEY), AsyncStorage.getItem(STAFF_KEY)])
-      .then(([c, s]) => {
+    Promise.all([CLIENT_KEY, STAFF_KEY, BUSINESS_KEY, LAWYER_KEY, FIRM_KEY].map((k) => AsyncStorage.getItem(k)))
+      .then(([c, s, b, l, f]) => {
         setClient(c);
         setStaff(s);
+        setBusiness(b);
+        setLawyer(l);
+        setFirm(f);
       })
       .catch(() => {})
       .finally(() => setReady(true));
@@ -50,9 +66,33 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setStaff(t);
     await persist(STAFF_KEY, t);
   }, []);
+  const setBusinessToken = useCallback(async (t: string | null) => {
+    setBusiness(t);
+    await persist(BUSINESS_KEY, t);
+  }, []);
+  const setLawyerToken = useCallback(async (t: string | null) => {
+    setLawyer(t);
+    await persist(LAWYER_KEY, t);
+  }, []);
+  const setFirmToken = useCallback(async (t: string | null) => {
+    setFirm(t);
+    await persist(FIRM_KEY, t);
+  }, []);
 
   return (
-    <SessionContext.Provider value={{ ready, clientToken, staffToken, setClientToken, setStaffToken }}>
+    <SessionContext.Provider value={{
+        ready,
+        clientToken,
+        staffToken,
+        setClientToken,
+        setStaffToken,
+        businessToken,
+        lawyerToken,
+        firmToken,
+        setBusinessToken,
+        setLawyerToken,
+        setFirmToken,
+      }}>
       {children}
     </SessionContext.Provider>
   );

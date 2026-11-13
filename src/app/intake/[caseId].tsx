@@ -161,7 +161,15 @@ export default function Intake() {
                   style={styles.input}
                   multiline
                   onSubmitEditing={() => send(text)}
-                  blurOnSubmit
+                  // On web, Enter sends and Shift+Enter adds a new line.
+                  onKeyPress={(e) => {
+                    const ev = e.nativeEvent as { key: string; shiftKey?: boolean };
+                    if (Platform.OS === 'web' && ev.key === 'Enter' && !ev.shiftKey) {
+                      (e as unknown as { preventDefault: () => void }).preventDefault();
+                      send(text);
+                    }
+                  }}
+                  submitBehavior="blurAndSubmit"
                   returnKeyType="send"
                 />
                 <Pressable

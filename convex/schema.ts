@@ -1,6 +1,7 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 import { factsValidator } from './lib/facts';
+import { remedyTables } from './lib/remedySchema';
 
 export const caseStatus = v.union(
   v.literal('draft'),
@@ -27,7 +28,8 @@ export default defineSchema({
   staff: defineTable({
     name: v.string(),
     organisation: v.string(),
-    role: v.union(v.literal('adviser'), v.literal('supervisor'), v.literal('admin')),
+    role: v.union(v.literal('adviser'), v.literal('supervisor'), v.literal('admin'), v.literal('lawyer'), v.literal('firm')),
+    firmId: v.optional(v.id('partnerFirms')),
     createdAt: v.number(),
   }),
 
@@ -66,7 +68,8 @@ export default defineSchema({
     .index('by_status', ['status']),
 
   documents: defineTable({
-    caseId: v.id('cases'),
+    caseId: v.optional(v.id('cases')),
+    matterId: v.optional(v.id('matters')),
     storageId: v.id('_storage'),
     kind: v.string(),
     status: v.union(v.literal('reading'), v.literal('read'), v.literal('failed')),
@@ -75,7 +78,9 @@ export default defineSchema({
     confidence: v.number(),
     confirmedByClient: v.boolean(),
     createdAt: v.number(),
-  }).index('by_caseId', ['caseId']),
+  })
+    .index('by_caseId', ['caseId'])
+    .index('by_matterId', ['matterId']),
 
   eligibility: defineTable({
     caseId: v.id('cases'),
@@ -133,9 +138,15 @@ export default defineSchema({
 
   auditLog: defineTable({
     caseId: v.optional(v.id('cases')),
+    matterId: v.optional(v.id('matters')),
     actor: v.string(), // 'client' | 'ai:<function>' | 'staff:<id>' | 'system'
     event: v.string(),
     detail: v.any(),
     at: v.number(),
-  }).index('by_caseId', ['caseId']),
+  })
+    .index('by_caseId', ['caseId'])
+    .index('by_matterId', ['matterId']),
+
+  // ---------- MVP 2: Remedy, the small business legal loop ----------
+  ...remedyTables,
 });

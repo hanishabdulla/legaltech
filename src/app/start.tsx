@@ -215,6 +215,9 @@ export default function Start() {
             <Pressable onPress={() => router.push('/adviser')} hitSlop={6}>
               <T kind="small" style={[styles.link, { color: C.muted }]}>Adviser sign in</T>
             </Pressable>
+            <Pressable onPress={() => router.push('/business')} hitSlop={6}>
+              <T kind="small" style={[styles.link, { color: C.info }]}>Remedy for businesses</T>
+            </Pressable>
           </View>
           <T kind="small" muted center>Prototype for the LegalTech in Leeds Hackathon. Information, not legal advice.</T>
         </View>

@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from 'convex/react';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 
 import { OutcomePill, type Outcome } from '@/components/case-bits';
 import { Banner, Button, Card, Chip, IconBubble, IconButton, Ionicons, Screen, T } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { C, DesktopBreakpoint, R, S } from '@/constants/theme';
 import { errorMessage, shortDate } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { api } from '@convex/_generated/api';
@@ -34,9 +34,21 @@ export default function Adviser() {
 function Queue({ token, name, organisation, onSignOut }: { token: string; name: string; organisation: string; onSignOut: () => void }) {
   const queue = useQuery(api.adviser.queue, { token });
   const signOut = useMutation(api.sessions.staffSignOut);
+  const { width } = useWindowDimensions();
+  const desktop = width >= DesktopBreakpoint;
+  const grid = (rows: Row[]) => (
+    <View style={desktop ? styles.grid : { gap: S.md }}>
+      {rows.map((c) => (
+        <View key={c._id} style={desktop ? styles.cell : undefined}>
+          <QueueCard c={c} />
+        </View>
+      ))}
+    </View>
+  );
 
   return (
     <Screen
+      wide
       header={
         <View style={styles.header}>
           <IconButton name="arrow-back" label="Back to client app" onPress={() => router.replace('/start')} />
@@ -66,14 +78,14 @@ function Queue({ token, name, organisation, onSignOut }: { token: string; name: 
                 <T kind="small" muted center>New cases appear here live when someone sends theirs.</T>
               </Card>
             ) : (
-              queue.open.map((c) => <QueueCard key={c._id} c={c} />)
+              grid(queue.open)
             )}
           </View>
 
           {queue.recent.length ? (
             <View style={{ gap: S.md }}>
               <T kind="heading">Recently decided</T>
-              {queue.recent.map((c) => <QueueCard key={c._id} c={c} />)}
+              {grid(queue.recent)}
             </View>
           ) : null}
         </View>
@@ -97,7 +109,7 @@ type Row = {
 function QueueCard({ c }: { c: Row }) {
   const lines = c.adviserSummary.split('\n').filter(Boolean).slice(0, 3);
   return (
-    <Card onPress={() => router.push(`/adviser/case/${c._id}`)} style={[{ gap: S.sm }, c.urgency === 'urgent' && { borderColor: C.danger, borderWidth: 1.5 }]}>
+    <Card onPress={() => router.push(`/adviser/case/${c._id}`)} style={[{ gap: S.sm, flexGrow: 1 }, c.urgency === 'urgent' && { borderColor: C.danger, borderWidth: 1.5 }]}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: S.sm, flexWrap: 'wrap' }}>
         {c.safeguarding ? <Tag icon="heart" text="Safeguarding" color={C.danger} bg={C.dangerSoft} /> : null}
         {c.urgency === 'urgent' ? <Tag icon="flash" text="Urgent" color={C.danger} bg={C.dangerSoft} /> : null}
@@ -196,6 +208,8 @@ function SignIn({ onToken }: { onToken: (t: string) => void }) {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: S.sm },
   stats: { flexDirection: 'row', gap: S.md },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: S.md },
+  cell: { flexBasis: '31%', flexGrow: 1, minWidth: 300 },
   tag: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: R.pill },
   input: { backgroundColor: C.surface, borderWidth: 1.5, borderColor: C.border, borderRadius: R.md, paddingHorizontal: S.lg, height: 54, fontSize: 17, color: C.text },
 });

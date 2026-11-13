@@ -15,11 +15,16 @@ export const C = {
   warnSoft: '#FEF3D7',
   info: '#1D4E89',
   infoSoft: '#E6EEF8',
+  /** Remedy (MVP 2) brand ink. */
+  remedy: '#1F2A44',
 } as const;
 
 export const S = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
 export const R = { sm: 10, md: 16, lg: 22, pill: 999 } as const;
 export const MaxWidth = 560;
+export const WideMaxWidth = 1200;
+/** Window width at which layouts switch to two columns. */
+export const DesktopBreakpoint = 960;
 
 /** Brand-ish colours for voucher cards. */
 export const RETAILER_COLORS: Record<string, string> = {

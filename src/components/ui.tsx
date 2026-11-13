@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { C, MaxWidth, R, S } from '@/constants/theme';
+import { C, MaxWidth, R, S, WideMaxWidth } from '@/constants/theme';
 
 export type IconName = ComponentProps<typeof Ionicons>['name'];
 export { Ionicons };
@@ -24,16 +24,20 @@ export function Screen({
   scroll = true,
   footer,
   header,
+  wide,
 }: {
   children: ReactNode;
   scroll?: boolean;
   footer?: ReactNode;
   header?: ReactNode;
+  /** Use the full desktop width (adviser dashboard). */
+  wide?: boolean;
 }) {
-  const body = <View style={styles.column}>{children}</View>;
+  const column = [styles.column, wide && { maxWidth: WideMaxWidth }];
+  const body = <View style={column}>{children}</View>;
   return (
     <SafeAreaView style={styles.screen} edges={footer ? ['top', 'left', 'right'] : ['top', 'left', 'right', 'bottom']}>
-      {header ? <View style={[styles.column, styles.headerRow]}>{header}</View> : null}
+      {header ? <View style={[column, styles.headerRow]}>{header}</View> : null}
       {scroll ? (
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -46,7 +50,7 @@ export function Screen({
       )}
       {footer ? (
         <SafeAreaView edges={['bottom']} style={styles.footer}>
-          <View style={styles.column}>{footer}</View>
+          <View style={column}>{footer}</View>
         </SafeAreaView>
       ) : null}
     </SafeAreaView>

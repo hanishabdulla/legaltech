@@ -21,7 +21,13 @@
     },
     "web": {
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "Common Counsel",
+      "shortName": "Common Counsel",
+      "description": "Help with food, fuel and crisis support in Leeds, checked by an adviser.",
+      "themeColor": "#0E6B4E",
+      "backgroundColor": "#F5F6F2",
+      "lang": "en-GB"
     },
     "plugins": [
       "expo-router",
