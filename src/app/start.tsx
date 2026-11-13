@@ -7,6 +7,7 @@ import { ExitButton } from '@/components/client-chrome';
 import { Banner, Button, Card, Chip, IconBubble, Ionicons, Screen, T } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
 import { LANGUAGES, caseHref, useEnsureClient } from '@/lib/client';
+import { draftHref, newDraftHref } from '@/lib/drafting';
 import { errorMessage, shortDate } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { api } from '@convex/_generated/api';
@@ -33,6 +34,7 @@ export default function Start() {
   const me = useQuery(api.sessions.client, clientToken ? { token: clientToken } : 'skip');
   const cases = useQuery(api.cases.mine, clientToken && me ? { token: clientToken } : 'skip');
   const vouchers = useQuery(api.vouchers.list, clientToken && me ? { token: clientToken } : 'skip');
+  const drafts = useQuery(api.drafting.mine, clientToken && me ? { kind: 'client', token: clientToken } : 'skip');
   const ensureClient = useEnsureClient();
   const createCase = useMutation(api.cases.create);
   const setLanguageRemote = useMutation(api.sessions.setLanguage);
@@ -198,6 +200,31 @@ export default function Start() {
           ) : null}
 
           {error ? <Banner tone="danger" icon="alert-circle">{error}</Banner> : null}
+
+          <Card onPress={() => router.push(newDraftHref('client'))} style={styles.caseRow}>
+            <IconBubble name="document-text" size={40} />
+            <View style={{ flex: 1, gap: 2 }}>
+              <T kind="label">Need a letter written?</T>
+              <T kind="small" muted>Benefits challenge, landlord repairs, deposit, debt or data request. We make the PDF.</T>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={C.faint} />
+          </Card>
+
+          {drafts?.length ? (
+            <View style={{ gap: S.sm }}>
+              <T kind="heading">Your letters</T>
+              {drafts.map((d) => (
+                <Card key={d._id} onPress={() => router.push(draftHref('client', d._id))} style={styles.caseRow}>
+                  <IconBubble name={d.status === 'generated' ? 'document' : 'create-outline'} size={40} />
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <T kind="label" numberOfLines={1}>{d.title}</T>
+                    <T kind="small" muted>{d.status === 'generated' ? `PDF ready · version ${d.version}` : 'In progress'}</T>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={C.faint} />
+                </Card>
+              ))}
+            </View>
+          ) : null}
 
           <Banner tone="danger" icon="call" title="In danger right now?">
             Call 999. National Domestic Abuse Helpline: 0808 2000 247 (free, 24 hours).

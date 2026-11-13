@@ -1,5 +1,6 @@
 import { ConvexError, v } from 'convex/values';
 import { mutation, query } from './_generated/server';
+import { deleteDraftsFor } from './drafting';
 import { audit, getClient, getStaff, newToken, requireClient, sha256 } from './lib/auth';
 
 export const CONSENT_VERSION = '2026-11-13';
@@ -44,6 +45,7 @@ export const deleteMyData = mutation({
   args: { token: v.string() },
   handler: async (ctx, { token }) => {
     const client = await requireClient(ctx, token);
+    await deleteDraftsFor(ctx, { clientId: client._id });
     const cases = await ctx.db.query('cases').withIndex('by_clientId', (q) => q.eq('clientId', client._id)).take(100);
     for (const c of cases) {
       const docs = await ctx.db.query('documents').withIndex('by_caseId', (q) => q.eq('caseId', c._id)).take(100);

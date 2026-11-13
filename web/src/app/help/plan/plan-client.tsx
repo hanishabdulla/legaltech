@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from 'convex/react';
 import type { FunctionReturnType } from 'convex/server';
-import { AlarmClock, ArrowLeft, CheckCheck, Copy, FileText, Phone, Undo2, Users } from 'lucide-react';
+import { AlarmClock, ArrowLeft, ArrowRight, CheckCheck, FileSignature, Copy, FileText, Phone, Undo2, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { AiBadge, ExitButton, NotAdvice, caseHref } from '@/components/cc';
 import { Container, useIdParam } from '@/components/page';
 import { Button, Empty, Spinner } from '@/components/ui';
+import { newDraftHref } from '@/lib/drafting';
 import { cx, daysLeft, longDate } from '@/lib/format';
 import { useToken } from '@/lib/session';
 import { api } from '@convex/_generated/api';
@@ -33,21 +34,21 @@ export default function PlanClient() {
   return (
     <Container narrow>
       <div className="mb-6 flex items-center justify-between">
-        <Link href={caseHref(caseId)} className="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink">
+        <Link href={caseHref(caseId)} className="inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink">
           <ArrowLeft className="size-4" /> Back to your case
         </Link>
         <ExitButton />
       </div>
       <div className="space-y-3">
         <AiBadge approved={c.status === 'approved'} />
-        <h1 className="text-3xl font-extrabold tracking-tight">Sorting out the cause</h1>
-        <p className="text-lg text-muted">Emergency help gets you through this week. These steps deal with what caused the crisis, so it doesn’t happen again.</p>
+        <h1 className="font-serif text-3xl font-normal tracking-tight">Sorting out the cause</h1>
+        <p className="text-base leading-relaxed text-muted">Steps to deal with what caused the crisis, so it doesn’t happen again.</p>
       </div>
       <div className="mt-8 space-y-4">
         {c.actions.length === 0 ? (
           <Empty icon={CheckCheck} title="Nothing else to do right now" text="If things change, start a new case or call Leeds Citizens Advice on 0808 278 7878." />
         ) : (
-          c.actions.map((a) => <ActionCard key={a._id} a={a} onStatus={(status) => setStatus({ token, actionId: a._id, status })} />)
+          c.actions.map((a) => <ActionCard key={a._id} a={a} caseId={caseId} onStatus={(status) => setStatus({ token, actionId: a._id, status })} />)
         )}
       </div>
       <div className="mt-8"><NotAdvice /></div>
@@ -55,26 +56,26 @@ export default function PlanClient() {
   );
 }
 
-function ActionCard({ a, onStatus }: { a: Action; onStatus: (s: 'todo' | 'done') => void }) {
+function ActionCard({ a, caseId, onStatus }: { a: Action; caseId: string; onStatus: (s: 'todo' | 'done') => void }) {
   const [showLetter, setShowLetter] = useState(false);
   const [copied, setCopied] = useState(false);
   const done = a.status === 'done';
   const left = a.deadline ? daysLeft(a.deadline) : null;
 
   return (
-    <article className={cx('space-y-4 rounded-2xl border border-line bg-surface p-5', done && 'opacity-70')}>
+    <article className={cx('space-y-4 rounded-xl border border-line bg-surface p-5', done && 'opacity-70')}>
       <div>
-        <h2 className="text-lg font-bold">{a.title}</h2>
+        <h2 className="text-sm font-medium text-ink">{a.title}</h2>
         <p className="mt-1 text-muted">{a.detail}</p>
       </div>
       {a.deadline && left !== null ? (
         <div className={cx('flex items-center gap-4 rounded-xl p-4', left <= 7 ? 'bg-danger-soft' : 'bg-warn-soft')}>
           <div className={cx('text-center', left <= 7 ? 'text-danger' : 'text-warn')}>
-            <p className="text-3xl font-extrabold">{left}</p>
-            <p className="text-xs font-bold">{left === 1 ? 'day' : 'days'}</p>
+            <p className="font-serif text-3xl font-normal">{left}</p>
+            <p className="text-xs font-medium">{left === 1 ? 'day' : 'days'}</p>
           </div>
           <div>
-            <p className="inline-flex items-center gap-1.5 font-semibold"><AlarmClock className="size-4" /> Deadline: {longDate(a.deadline)}</p>
+            <p className="inline-flex items-center gap-1.5 font-medium"><AlarmClock className="size-4" /> Deadline: {longDate(a.deadline)}</p>
             {a.deadlineBasis ? <p className="text-sm text-muted">{a.deadlineBasis}</p> : null}
           </div>
         </div>
@@ -84,7 +85,12 @@ function ActionCard({ a, onStatus }: { a: Action; onStatus: (s: 'todo' | 'done')
 
       {a.draftLetter ? (
         <div className="space-y-3">
-          <Button variant="secondary" icon={FileText} onClick={() => setShowLetter(!showLetter)}>{showLetter ? 'Hide draft letter' : 'See draft letter'}</Button>
+          {a.type === 'mandatory_reconsideration' ? (
+            <Link href={newDraftHref('client', { caseId, template: 'mandatory_reconsideration' })} className="flex items-center gap-3 rounded-xl bg-brand p-4 font-medium text-white">
+              <FileSignature className="size-5" /> <span className="flex-1">Write this letter with me and get a PDF</span> <ArrowRight className="size-4" />
+            </Link>
+          ) : null}
+          <Button variant="secondary" icon={FileText} onClick={() => setShowLetter(!showLetter)}>{showLetter ? 'Hide the template' : 'See the template'}</Button>
           {showLetter ? (
             <>
               <pre className="rounded-xl bg-bg p-4 font-sans text-sm whitespace-pre-wrap">{a.draftLetter}</pre>
@@ -107,11 +113,11 @@ function ActionCard({ a, onStatus }: { a: Action; onStatus: (s: 'todo' | 'done')
         <div className="flex items-center gap-3 rounded-xl bg-info-soft p-3">
           <Users className="size-5 shrink-0 text-info" />
           <div className="flex-1 text-sm">
-            <p className="font-bold">Free help: {a.handoffTo}</p>
+            <p className="font-medium">Free help: {a.handoffTo}</p>
             {a.handoffContact ? <p className="text-muted">{a.handoffContact}</p> : null}
           </div>
           {a.handoffContact ? (
-            <a href={`tel:${a.handoffContact.replace(/\s/g, '')}`} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold text-info hover:bg-white/60">
+            <a href={`tel:${a.handoffContact.replace(/\s/g, '')}`} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-info hover:bg-white/60">
               <Phone className="size-4" /> Call
             </a>
           ) : null}

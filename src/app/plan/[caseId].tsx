@@ -1,11 +1,12 @@
 import { useMutation, useQuery } from 'convex/react';
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Linking, Share, StyleSheet, View } from 'react-native';
 
 import { AiBadge, ClientHeader, NotAdvice } from '@/components/client-chrome';
 import { Button, Card, IconBubble, Ionicons, Screen, T } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
+import { newDraftHref } from '@/lib/drafting';
 import { daysLeft, longDate } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { api } from '@convex/_generated/api';
@@ -85,7 +86,10 @@ function ActionCard({ action: a, onStatus }: { action: Doc<'actions'>; onStatus:
 
       {a.draftLetter ? (
         <View style={{ gap: S.sm }}>
-          <Button title={showLetter ? 'Hide draft letter' : 'See draft letter'} variant="secondary" icon="document-text-outline" onPress={() => setShowLetter((s) => !s)} />
+          {a.type === 'mandatory_reconsideration' ? (
+            <Button title="Write this letter with me (PDF)" icon="document-text" onPress={() => router.push(newDraftHref('client', { caseId: a.caseId, template: 'mandatory_reconsideration' }))} />
+          ) : null}
+          <Button title={showLetter ? 'Hide the template' : 'See the template'} variant="secondary" icon="document-text-outline" onPress={() => setShowLetter((s) => !s)} />
           {showLetter ? (
             <>
               <View style={styles.letter}>

@@ -8,6 +8,7 @@ import { FactChips } from '@/components/case-bits';
 import { ClientHeader } from '@/components/client-chrome';
 import { Banner, Button, Chip, Ionicons, T } from '@/components/ui';
 import { C, MaxWidth, R, S } from '@/constants/theme';
+import { draftHref, newDraftHref } from '@/lib/drafting';
 import { errorMessage } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { api } from '@convex/_generated/api';
@@ -37,6 +38,7 @@ export default function Intake() {
     setText('');
     try {
       const res = await turn({ token, caseId, text: message.trim() });
+      if (res.draftId) router.push(draftHref('client', res.draftId));
       setAiFailed(res.aiFailed);
     } catch (err) {
       setError(errorMessage(err));
@@ -109,8 +111,17 @@ export default function Intake() {
             ) : null}
 
             {c.transcript.map((m, i) => (
-              <View key={i} style={[styles.bubble, m.role === 'client' ? styles.mine : styles.theirs]}>
-                <T style={m.role === 'client' ? { color: '#fff' } : undefined}>{m.text}</T>
+              <View key={i} style={{ gap: S.sm }}>
+                <View style={[styles.bubble, m.role === 'client' ? styles.mine : styles.theirs]}>
+                  <T style={m.role === 'client' ? { color: '#fff' } : undefined}>{m.text}</T>
+                </View>
+                {m.draftId ? (
+                  <Pressable onPress={() => router.push(draftHref('client', m.draftId!))} style={styles.draftCard}>
+                    <Ionicons name="document-text-outline" size={22} color={C.primary} />
+                    <T kind="label" style={{ flex: 1 }}>Write the letter with me</T>
+                    <Ionicons name="arrow-forward" size={18} color={C.primary} />
+                  </Pressable>
+                ) : null}
               </View>
             ))}
             {thinking ? (
@@ -185,6 +196,9 @@ export default function Intake() {
               <Pressable onPress={() => router.push(`/steps/${caseId}`)} hitSlop={6}>
                 <T kind="small" style={{ color: C.primary, fontWeight: '700' }}>Answer step by step instead</T>
               </Pressable>
+              <Pressable onPress={() => router.push(newDraftHref('client', { caseId }))} hitSlop={6}>
+                <T kind="small" style={{ color: C.primary, fontWeight: '700' }}>Need a letter?</T>
+              </Pressable>
               {!c.intakeDone && enough ? (
                 <Pressable onPress={checkWhatICanGet} hitSlop={6}>
                   <T kind="small" style={{ color: C.primary, fontWeight: '700' }}>Skip to results</T>
@@ -211,6 +225,7 @@ function Loading({ label, sub }: { label?: string; sub?: string }) {
 }
 
 const styles = StyleSheet.create({
+  draftCard: { flexDirection: 'row', alignItems: 'center', gap: S.md, alignSelf: 'flex-start', maxWidth: '86%', backgroundColor: C.surface, borderWidth: 1.5, borderColor: C.primary, borderRadius: R.md, padding: S.md },
   screen: { flex: 1, backgroundColor: C.bg },
   col: { width: '100%', maxWidth: MaxWidth, alignSelf: 'center', paddingHorizontal: S.xl },
   scrollContent: { paddingTop: S.md, paddingBottom: S.xl },

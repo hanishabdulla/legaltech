@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery } from 'convex/react';
-import { ArrowRight, Briefcase, Leaf, Scale } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
 import { Container } from '@/components/page';
@@ -15,24 +15,21 @@ const ORGS = ['Leeds Citizens Advice', 'Community Hub (Harehills)', 'Uni law cli
 
 const COPY = {
   adviser: {
-    icon: Leaf,
-    bg: 'bg-brand',
+    sub: 'Common Counsel',
     title: 'Adviser sign in',
-    text: 'For registered referrers: review cases, approve referrals and edit AI case notes.',
+    text: 'Review cases, approve referrals and edit case notes.',
     code: 'LEEDS',
   },
   lawyer: {
-    icon: Scale,
-    bg: 'bg-remedy',
-    title: 'Remedy lawyer',
-    text: 'Review flagged matters, edit and approve AI drafts, ask clients for information and recommend partner firms.',
+    sub: 'Remedy',
+    title: 'Lawyer portal',
+    text: 'Review flagged matters, edit AI drafts and recommend partner firms.',
     code: 'REMEDY',
   },
   firm: {
-    icon: Briefcase,
-    bg: 'bg-remedy',
+    sub: 'Remedy',
     title: 'Partner firm',
-    text: 'See the handoff packs Remedy clients chose to send to your firm, and accept or decline them.',
+    text: 'Review and respond to client handoff packs.',
     code: 'REMEDY',
   },
 } as const;
@@ -69,36 +66,35 @@ export function StaffSignIn({ role }: { role: 'adviser' | 'lawyer' | 'firm' }) {
 
   return (
     <Container narrow>
-      <form onSubmit={submit} className="space-y-6 rounded-3xl border border-line bg-surface p-8">
-        <div className="space-y-3">
-          <span className={`flex size-12 items-center justify-center rounded-xl text-white ${copy.bg}`}><copy.icon className="size-6" /></span>
-          <h1 className="text-3xl font-extrabold tracking-tight">{copy.title}</h1>
-          <p className="text-muted">{copy.text}</p>
+      <form onSubmit={submit} className="mx-auto max-w-md space-y-6 rounded-xl border border-line bg-surface p-6 sm:p-8">
+        <div className="space-y-1.5">
+          <p className="text-xs font-medium text-muted">{copy.sub}</p>
+          <h1 className="font-serif text-3xl font-medium tracking-tight">{copy.title}</h1>
+          <p className="text-sm text-muted">{copy.text}</p>
         </div>
         <Field label="Your name">
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Priya" />
         </Field>
         {role === 'adviser' ? (
           <div className="space-y-2">
-            <p className="font-semibold">Organisation</p>
-            <div className="flex flex-wrap gap-2">{ORGS.map((o) => <Chip key={o} selected={org === o} onClick={() => setOrg(o)}>{o}</Chip>)}</div>
+            <p className="text-sm font-medium">Organisation</p>
+            <div className="flex flex-wrap gap-1.5">{ORGS.map((o) => <Chip key={o} selected={org === o} onClick={() => setOrg(o)}>{o}</Chip>)}</div>
           </div>
         ) : null}
         {role === 'firm' ? (
           <div className="space-y-2">
-            <p className="font-semibold">Your firm</p>
+            <p className="text-sm font-medium">Your firm</p>
             {panel?.length === 0 ? <Banner tone="warn">No panel firms yet. Run <code>npx convex run seed:run</code>.</Banner> : null}
             {panel?.map((f) => <Option key={f._id} label={f.name} hint={`${f.city} · ${f.licence}`} selected={firmId === f._id} onClick={() => setFirmId(f._id)} />)}
           </div>
         ) : null}
-        <Field label="Access code">
-          <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder={`Demo code: ${copy.code}`} autoCapitalize="characters" />
+        <Field label="Access code" hint={`Demo code: ${copy.code}`}>
+          <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder={copy.code} autoCapitalize="characters" />
         </Field>
         {error ? <Banner tone="danger">{error}</Banner> : null}
         <Button type="submit" size="lg" className="w-full" variant={role === 'adviser' ? 'primary' : 'remedy'} icon={ArrowRight} loading={busy} disabled={!name.trim() || !code.trim() || (role === 'firm' && !firmId)}>
           Sign in
         </Button>
-        <Banner tone="info">Demo sign-in. The pilot uses proper staff accounts with roles.</Banner>
       </form>
     </Container>
   );

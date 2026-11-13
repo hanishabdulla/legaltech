@@ -37,12 +37,12 @@ export default function WalletClient() {
   return (
     <Container>
       <div className="mb-6 flex items-center justify-between">
-        <Link href="/help/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><ArrowLeft className="size-4" /> Back</Link>
+        <Link href="/help/" className="inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink"><ArrowLeft className="size-4" /> Back</Link>
         <ExitButton />
       </div>
       <div className="mb-8 space-y-1">
-        <p className="text-xs font-bold tracking-wider text-muted uppercase">Available to spend</p>
-        <p className="text-5xl font-extrabold tracking-tight">{money(total)}</p>
+        <p className="text-[11px] font-medium tracking-wider text-muted uppercase">Available to spend</p>
+        <p className="font-serif text-5xl font-normal tracking-tight tabular-nums">{money(total)}</p>
         <p className="text-muted">Illustrative amounts for the demo. Vouchers only appear after an adviser approves.</p>
       </div>
 
@@ -53,13 +53,13 @@ export default function WalletClient() {
           <div className="space-y-6">
             {active.length ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Active</h2><AiBadge approved /></div>
+                <div className="flex items-center justify-between"><h2 className="text-sm font-medium text-ink">Active</h2><AiBadge approved /></div>
                 {active.map((v) => <VoucherCard key={v._id} voucher={v} href={`/help/wallet/?v=${v._id}`} />)}
               </div>
             ) : null}
             {past.length ? (
               <div className="space-y-3">
-                <h2 className="text-lg font-bold">Used and expired</h2>
+                <h2 className="text-sm font-medium text-ink">Used and expired</h2>
                 {past.map((v) => <VoucherCard key={v._id} compact voucher={v} href={`/help/wallet/?v=${v._id}`} />)}
               </div>
             ) : null}
@@ -83,29 +83,29 @@ function VoucherDetail({ v, token }: { v: Voucher; token: string }) {
 
   return (
     <section className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-      <div className="overflow-hidden rounded-3xl bg-surface shadow-sm ring-1 ring-line">
+      <div className="overflow-hidden rounded-xl bg-surface shadow-sm ring-1 ring-line">
         <div className="space-y-1 p-6 text-white" style={{ backgroundColor: color }}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold tracking-wider uppercase">{food ? 'Food voucher' : 'Energy top-up'}</span>
+            <span className="text-xs font-medium tracking-wider uppercase">{food ? 'Food voucher' : 'Energy top-up'}</span>
             <StatusPill status={status} left={daysLeft(v.expiresAt)} />
           </div>
-          <p className="font-semibold text-white/90">{v.retailer}</p>
-          <p className="text-5xl font-extrabold tracking-tight">{money(v.valuePence)}</p>
+          <p className="font-medium text-white/90">{v.retailer}</p>
+          <p className="font-serif text-5xl font-normal tracking-tight tabular-nums">{money(v.valuePence)}</p>
         </div>
         <div className="flex flex-col items-center gap-3 border-t-2 border-dashed border-line p-6">
           <div className={status === 'active' ? '' : 'opacity-25'}>
             <QRCodeSVG value={v.code} size={176} />
           </div>
-          <p className="text-xs font-bold tracking-wider text-muted uppercase">Voucher code</p>
-          <p className="font-mono text-xl font-bold tracking-wider tabular-nums">{groupCode(v.code)}</p>
+          <p className="text-[11px] font-medium tracking-wider text-muted uppercase">Voucher code</p>
+          <p className="font-mono text-xl font-medium tracking-wider tabular-nums">{groupCode(v.code)}</p>
           <button type="button" onClick={() => setShowPin(!showPin)} className="inline-flex items-center gap-2 rounded-full bg-bg px-4 py-2 text-sm">
-            PIN <span className="font-bold tracking-[0.3em]">{showPin ? v.pin : '••••'}</span>
+            PIN <span className="font-medium tracking-[0.3em]">{showPin ? v.pin : '••••'}</span>
             {showPin ? <EyeOff className="size-4 text-muted" /> : <Eye className="size-4 text-muted" />}
           </button>
         </div>
       </div>
 
-      <dl className="divide-y divide-line rounded-2xl border border-line bg-surface text-sm">
+      <dl className="divide-y divide-line rounded-xl border border-line bg-surface text-sm">
         {[
           ['Status', status === 'active' ? 'Ready to use' : status === 'used' ? 'Used' : 'Expired'],
           ['Issued', longDate(v.issuedAt)],
@@ -115,16 +115,16 @@ function VoucherDetail({ v, token }: { v: Voucher; token: string }) {
         ].map(([k, val]) => (
           <div key={k} className="flex justify-between px-4 py-3">
             <dt className="text-muted">{k}</dt>
-            <dd className="font-semibold">{val}</dd>
+            <dd className="font-medium">{val}</dd>
           </div>
         ))}
       </dl>
 
       <div className="space-y-2">
-        <h3 className="font-bold">How to use it</h3>
+        <h3 className="font-medium">How to use it</h3>
         <ol className="space-y-2 text-sm">
           {steps.map((s, i) => (
-            <li key={s} className="flex gap-3"><span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-bold text-brand">{i + 1}</span>{s}</li>
+            <li key={s} className="flex gap-3"><span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-medium text-brand">{i + 1}</span>{s}</li>
           ))}
         </ol>
       </div>

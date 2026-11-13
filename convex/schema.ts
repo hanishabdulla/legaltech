@@ -1,6 +1,7 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 import { factsValidator } from './lib/facts';
+import { draftTables } from './lib/drafting/schema';
 import { remedyTables } from './lib/remedySchema';
 
 export const caseStatus = v.union(
@@ -46,7 +47,14 @@ export default defineSchema({
     factConfidence: v.record(v.string(), v.number()),
     factSources: v.record(v.string(), v.string()), // field -> 'client' | 'document' | 'adviser'
     story: v.string(), // what the client wrote first, in their own words
-    transcript: v.array(v.object({ role: v.union(v.literal('client'), v.literal('assistant')), text: v.string(), at: v.number() })),
+    transcript: v.array(
+      v.object({
+        role: v.union(v.literal('client'), v.literal('assistant')),
+        text: v.string(),
+        at: v.number(),
+        draftId: v.optional(v.id('drafts')), // a drafting request started from this chat
+      }),
+    ),
     nextQuestion: v.optional(v.object({ key: v.string(), text: v.string(), suggestions: v.array(v.string()) })),
     intakeDone: v.boolean(),
     urgency: v.union(v.literal('urgent'), v.literal('standard')),
@@ -149,4 +157,7 @@ export default defineSchema({
 
   // ---------- MVP 2: Remedy, the small business legal loop ----------
   ...remedyTables,
+
+  // ---------- Legal drafting (both products) ----------
+  ...draftTables,
 });

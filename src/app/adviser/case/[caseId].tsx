@@ -138,6 +138,21 @@ export default function AdviserCase() {
           </View>
         ) : null}
 
+        {c.drafts.length ? (
+          <View style={{ gap: S.md }}>
+            <T kind="heading">Letters the client drafted</T>
+            {c.drafts.map((d) => (
+              <Card key={d._id} style={{ flexDirection: 'row', gap: S.md, alignItems: 'center' }} onPress={d.pdfUrl ? () => Linking.openURL(d.pdfUrl!) : undefined}>
+                <Ionicons name="document-text-outline" size={22} color={C.primary} />
+                <View style={{ flex: 1 }}>
+                  <T kind="label">{d.title}</T>
+                  <T kind="small" muted>{d.ref} · {d.status === 'generated' ? `version ${d.version}, tap to open` : 'not finished'}</T>
+                </View>
+              </Card>
+            ))}
+          </View>
+        ) : null}
+
         {/* Rule trace */}
         <View style={{ gap: S.md }}>
           <T kind="heading">Pre-check (rules)</T>
@@ -348,6 +363,21 @@ export default function AdviserCase() {
                   <T kind="small" style={{ color: d.confirmedByClient ? C.primary : C.warn, fontWeight: '700' }}>
                     {d.confirmedByClient ? 'Confirmed by client' : 'Not confirmed'} · {Math.round(d.confidence * 100)}% AI confidence
                   </T>
+                </View>
+              </Card>
+            ))}
+          </View>
+        ) : null}
+
+        {c.drafts.length ? (
+          <View style={{ gap: S.md }}>
+            <T kind="heading">Letters the client drafted</T>
+            {c.drafts.map((d) => (
+              <Card key={d._id} style={{ flexDirection: 'row', gap: S.md, alignItems: 'center' }} onPress={d.pdfUrl ? () => Linking.openURL(d.pdfUrl!) : undefined}>
+                <Ionicons name="document-text-outline" size={22} color={C.primary} />
+                <View style={{ flex: 1 }}>
+                  <T kind="label">{d.title}</T>
+                  <T kind="small" muted>{d.ref} · {d.status === 'generated' ? `version ${d.version}, tap to open` : 'not finished'}</T>
                 </View>
               </Card>
             ))}

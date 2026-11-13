@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery } from 'convex/react';
-import { ArrowRight, ChevronRight, Clock, CloudOff, Flame, Phone, Scissors, ShieldCheck, ShoppingBasket, Wallet } from 'lucide-react';
+import { ArrowRight, ChevronRight, Clock, CloudOff, FileText, Flame, Phone, Scissors, ShieldCheck, ShoppingBasket, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { CASE_STATUS, ExitButton, LANGUAGES, caseHref } from '@/components/cc';
 import { Container } from '@/components/page';
 import { Banner, Button, Card, Check, Chip, Spinner, Textarea } from '@/components/ui';
+import { draftHref, newDraftHref } from '@/lib/drafting';
 import { errorMessage, shortDate } from '@/lib/format';
 import { setToken, useToken } from '@/lib/session';
 import { api } from '@convex/_generated/api';
@@ -34,6 +35,7 @@ export default function HelpStart() {
   const live = !!token && !!me;
   const cases = useQuery(api.cases.mine, live ? { token: token! } : 'skip');
   const vouchers = useQuery(api.vouchers.list, live ? { token: token! } : 'skip');
+  const drafts = useQuery(api.drafting.mine, live ? { kind: 'client', token: token! } : 'skip');
   const startClient = useMutation(api.sessions.startClient);
   const createCase = useMutation(api.cases.create);
   const setLanguageRemote = useMutation(api.sessions.setLanguage);
@@ -97,8 +99,8 @@ export default function HelpStart() {
       <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
         <section className="space-y-6">
           <div className="space-y-3">
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">What’s happened?</h1>
-            <p className="text-lg text-muted">Tell us in your own words. No account, no forms. We’ll ask a few questions and get it ready for an adviser.</p>
+            <h1 className="font-serif text-4xl font-normal tracking-tight text-balance sm:text-5xl">What’s happened?</h1>
+            <p className="text-base leading-relaxed text-muted">Tell us in your own words. No account, no forms. We’ll ask a few questions and get it ready for an adviser.</p>
           </div>
 
           <div className="space-y-3">
@@ -114,7 +116,7 @@ export default function HelpStart() {
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs font-bold tracking-wider text-muted uppercase">Or start with</p>
+            <p className="text-[11px] font-medium tracking-wider text-muted uppercase">Or start with</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {QUICK.map((q) => (
                 <button
@@ -122,7 +124,7 @@ export default function HelpStart() {
                   type="button"
                   disabled={!!busy}
                   onClick={() => begin(q.text, 'chat')}
-                  className="flex items-center gap-3 rounded-xl border-[1.5px] border-line bg-surface p-4 text-left font-semibold transition-colors hover:border-brand hover:bg-brand-soft disabled:opacity-50">
+                  className="flex items-center gap-3 rounded-xl border border-line bg-surface p-4 text-left font-medium transition-colors hover:border-brand hover:bg-brand-soft disabled:opacity-50">
                   <q.icon className="size-5 shrink-0 text-brand" />
                   <span className="flex-1">{q.text}</span>
                   <ArrowRight className="size-4 text-faint" />
@@ -132,14 +134,14 @@ export default function HelpStart() {
           </div>
 
           {!live ? (
-            <div className="space-y-3 rounded-2xl border border-line bg-surface p-5">
+            <div className="space-y-3 rounded-xl border border-line bg-surface p-5">
               <Check
                 checked={consent}
                 onChange={setConsent}
                 label="I agree that Common Counsel can save what I share, including health information like food needs, so an adviser can help me. I can delete it at any time."
               />
               <details className="text-sm">
-                <summary className="cursor-pointer font-bold text-brand">How we use your information</summary>
+                <summary className="cursor-pointer font-medium text-brand">How we use your information</summary>
                 <ul className="mt-3 space-y-2">
                   {PRIVACY.map((p) => (
                     <li key={p} className="flex gap-2"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" />{p}</li>
@@ -150,28 +152,52 @@ export default function HelpStart() {
           ) : null}
 
           {error ? <Banner tone="danger">{error}</Banner> : null}
-          <button type="button" onClick={() => begin('', 'steps')} disabled={!!busy} className="text-sm font-bold text-brand underline underline-offset-2">
+          <button type="button" onClick={() => begin('', 'steps')} disabled={!!busy} className="text-sm font-medium text-brand underline underline-offset-2">
             Answer step by step instead
           </button>
         </section>
 
         <aside className="space-y-6">
           <Banner tone="danger" icon={Phone} title="In danger right now?">
-            Call 999. National Domestic Abuse Helpline: <a className="font-semibold underline" href="tel:08082000247">0808 2000 247</a> (free, 24 hours).
+            Call 999. National Domestic Abuse Helpline: <a className="font-medium underline" href="tel:08082000247">0808 2000 247</a> (free, 24 hours).
           </Banner>
+
+          <Link href={newDraftHref('client')} className="flex items-center gap-4 rounded-xl border border-line bg-surface p-5 hover:border-faint">
+            <span className="flex-1">
+              <span className="block font-medium">Need a letter written?</span>
+              <span className="block text-sm text-muted">Benefits, repairs, deposits, debts or your data.</span>
+            </span>
+            <ChevronRight className="size-4 text-faint" />
+          </Link>
+
+          {drafts?.length ? (
+            <div className="space-y-2">
+              <h2 className="text-sm font-medium text-ink">Your letters</h2>
+              {drafts.map((d) => (
+                <Link key={d._id} href={draftHref('client', d._id)} className="flex items-center gap-3 rounded-xl border border-line bg-surface p-4 hover:border-faint">
+                  <FileText className="size-5 shrink-0 text-brand" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{d.title}</p>
+                    <p className="text-sm text-muted">{d.status === 'generated' ? `PDF ready · version ${d.version}` : 'In progress'} · {shortDate(d.updatedAt)}</p>
+                  </div>
+                  <ChevronRight className="size-4 text-faint" />
+                </Link>
+              ))}
+            </div>
+          ) : null}
 
           {live ? (
             <div className="space-y-3">
-              <h2 className="text-lg font-bold">Your cases</h2>
+              <h2 className="text-sm font-medium text-ink">Your cases</h2>
               {cases === undefined ? (
                 <Spinner className="py-6" />
               ) : cases.length === 0 ? (
                 <p className="text-sm text-muted">Nothing yet. Tell us what’s happened to start.</p>
               ) : (
                 cases.map((c) => (
-                  <Link key={c._id} href={caseHref(c._id)} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 hover:border-faint">
+                  <Link key={c._id} href={caseHref(c._id)} className="flex items-center gap-3 rounded-xl border border-line bg-surface p-4 hover:border-faint">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold">{c.story || 'Step-by-step check'}</p>
+                      <p className="truncate font-medium">{c.story || 'Step-by-step check'}</p>
                       <p className="text-sm text-muted">{CASE_STATUS[c.status]} · {shortDate(c.createdAt)}</p>
                     </div>
                     <ChevronRight className="size-4 text-faint" />
@@ -179,15 +205,15 @@ export default function HelpStart() {
                 ))
               )}
               {vouchers?.length ? (
-                <Link href="/help/wallet/" className="flex items-center gap-3 rounded-2xl bg-brand p-4 font-semibold text-white">
-                  <Wallet className="size-5" /> My vouchers ({vouchers.length}) <ChevronRight className="ml-auto size-4" />
+                <Link href="/help/wallet/" className="flex items-center gap-3 rounded-xl border border-line bg-surface p-4 text-sm font-medium hover:border-faint">
+                  <Wallet className="size-4" /> Vouchers <span className="text-muted">{vouchers.length}</span> <ChevronRight className="ml-auto size-4 text-faint" />
                 </Link>
               ) : null}
-              <button type="button" onClick={wipe} className="text-sm font-bold text-danger underline underline-offset-2">Delete my data</button>
+              <button type="button" onClick={wipe} className="text-sm font-medium text-danger underline underline-offset-2">Delete my data</button>
             </div>
           ) : (
             <Card className="space-y-3">
-              <h2 className="font-bold">What happens next</h2>
+              <h2 className="font-medium">What happens next</h2>
               <ol className="space-y-2 text-sm text-muted">
                 <li>1. You tell us what’s happened, at any hour.</li>
                 <li>2. We check the Leeds Crisis Payment, food bank and fuel criteria.</li>

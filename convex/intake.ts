@@ -1,7 +1,10 @@
 import { ConvexError, v } from 'convex/values';
 import { internal } from './_generated/api';
+import type { Id } from './_generated/dataModel';
 import { action } from './_generated/server';
 import { MAX_CLIENT_TURNS } from './cases';
+import { startDraft } from './drafting';
+import { looksLikeDraftRequest } from './lib/drafting/templates';
 import { ISSUE_TYPES, buildActionPlan, type IssueType } from './lib/actionPlan';
 import { FACT_SCHEMA_PROMPT, describeFacts, missingFacts, sanitiseFacts, type Facts } from './lib/facts';
 import { FAST_MODEL, SMART_MODEL, TONE, clientText, geminiJson, obj, str, strArr } from './lib/gemini';
@@ -19,7 +22,7 @@ export const LANGUAGE_NAMES: Record<string, string> = {
 
 const SAFEGUARDING_RULE = `"safeguarding": a string ONLY if there is any sign of domestic abuse, a child at risk, self-harm, suicidal thoughts or immediate danger; one kind sentence telling them to call 999 in an emergency, and the National Domestic Abuse Helpline 0808 2000 247 or Samaritans 116 123 as fits. Otherwise null.`;
 
-type TurnResult = { done: boolean; aiFailed: boolean };
+type TurnResult = { done: boolean; aiFailed: boolean; draftId?: Id<'drafts'> };
 
 /**
  * One turn of the conversational intake. Extracts facts from what the client
@@ -32,6 +35,25 @@ export const turn = action({
     if (c.status !== 'draft') throw new ConvexError('This case has already been sent to an adviser.');
 
     const said = (text ?? '').trim().slice(0, 2000);
+
+    // "I want a letter for…": hand over to drafting instead of the eligibility intake.
+    if (said && looksLikeDraftRequest(said)) {
+      const owner = await ctx.runQuery(internal.drafting.ownerContext, { kind: 'client', token, caseId });
+      const res = await startDraft(ctx, { kind: 'client', token, text: said, owner });
+      if (res.status !== 'unclear') {
+        await ctx.runMutation(internal.drafting.noteInCase, {
+          caseId,
+          clientText: said,
+          assistantText:
+            res.status === 'started'
+              ? `I can help you write that: a ${res.title.toLowerCase()}. Tap below to answer a few questions, and I’ll make the PDF.`
+              : res.message,
+          draftId: res.status === 'started' ? res.draftId : undefined,
+        });
+        return { done: c.intakeDone, aiFailed: false, draftId: res.status === 'started' ? res.draftId : undefined };
+      }
+    }
+
     const clientTurns = c.transcript.filter((t) => t.role === 'client').length + (said ? 1 : 0);
     const lastQuestion = c.nextQuestion;
     const langName = LANGUAGE_NAMES[language] ?? 'English';

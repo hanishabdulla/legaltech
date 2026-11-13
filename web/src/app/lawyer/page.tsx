@@ -33,9 +33,9 @@ function Queue({ token, name, onSignOut }: { token: string; name: string; onSign
     <Container>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-remedy">Remedy · lawyer</p>
-          <h1 className="text-3xl font-extrabold tracking-tight">Review queue</h1>
-          <p className="text-muted">Signed in as {name}. High urgency first, then oldest. Updates live.</p>
+          <p className="text-[11px] font-medium tracking-wider text-remedy uppercase">Remedy · lawyer</p>
+          <h1 className="font-serif text-3xl font-normal tracking-tight">Review queue</h1>
+          <p className="text-sm text-muted">{name}</p>
         </div>
         <Button variant="outline" icon={LogOut} onClick={async () => { await signOut({ token }).catch(() => {}); onSignOut(); }}>Sign out</Button>
       </div>
@@ -50,7 +50,7 @@ function Queue({ token, name, onSignOut }: { token: string; name: string; onSign
             <Stat label="Awaiting client" value={queue.open.length - waiting.length} tone="warn" />
           </div>
           <section className="space-y-4">
-            <h2 className="text-lg font-bold">Open matters</h2>
+            <h2 className="text-sm font-medium text-ink">Open matters</h2>
             {queue.open.length === 0 ? (
               <Empty icon={Coffee} title="Queue is clear" text="Flagged matters appear here live when a founder asks a question." />
             ) : (
@@ -59,7 +59,7 @@ function Queue({ token, name, onSignOut }: { token: string; name: string; onSign
           </section>
           {queue.recent.length ? (
             <section className="space-y-4">
-              <h2 className="text-lg font-bold">Recently checked</h2>
+              <h2 className="text-sm font-medium text-ink">Recently checked</h2>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{queue.recent.map((m) => <QueueCard key={m._id} m={m} now={now} />)}</div>
             </section>
           ) : null}
@@ -73,7 +73,7 @@ function QueueCard({ m, now }: { m: Row; now: number }) {
   const due = m.status === 'in_review' ? dueLabel(m.dueAt, now) : null;
   const hot = m.status === 'in_review' && (m.urgency === 'high' || due?.overdue);
   return (
-    <Link href={`/lawyer/matter/?id=${m._id}`} className={cx('flex flex-col gap-3 rounded-2xl border bg-surface p-5 transition hover:shadow-sm', hot ? 'border-[1.5px] border-danger' : 'border-line hover:border-faint')}>
+    <Link href={`/lawyer/matter/?id=${m._id}`} className={cx('flex flex-col gap-3 rounded-xl border bg-surface p-5 transition', hot ? 'border border-danger' : 'border-line hover:border-faint')}>
       <div className="flex flex-wrap items-center gap-2">
         {m.urgency === 'high' ? <Pill tone="danger" icon={Zap}>High urgency</Pill> : null}
         <StatusBadge status={m.status} />
@@ -81,10 +81,10 @@ function QueueCard({ m, now }: { m: Row; now: number }) {
       </div>
       <p className="text-sm text-muted">{m.business} · {TOPIC_LABELS[m.topic] ?? m.topic}</p>
       <div className="space-y-0.5">
-        {m.lines.map((l, i) => <p key={i} className={cx('line-clamp-2', i === 0 ? 'font-semibold' : 'text-sm text-muted')}>{l}</p>)}
+        {m.lines.map((l, i) => <p key={i} className={cx('line-clamp-2', i === 0 ? 'font-medium' : 'text-sm text-muted')}>{l}</p>)}
       </div>
       <FlagChips codes={m.flagCodes} />
-      {due ? <p className={cx('inline-flex items-center gap-1 text-sm font-bold', due.overdue ? 'text-danger' : 'text-muted')}><Timer className="size-4" /> {due.text}</p> : null}
+      {due ? <p className={cx('inline-flex items-center gap-1 text-sm font-medium', due.overdue ? 'text-danger' : 'text-muted')}><Timer className="size-4" /> {due.text}</p> : null}
     </Link>
   );
 }

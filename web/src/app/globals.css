@@ -3,32 +3,34 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-newsreader);
 }
 
 @theme {
-  --color-bg: #f5f6f2;
+  --color-bg: #faf9f6;
   --color-surface: #ffffff;
-  --color-ink: #16231d;
-  --color-muted: #5c6b64;
-  --color-faint: #8a968f;
-  --color-line: #e3e7e1;
-  --color-brand: #0e6b4e;
-  --color-brand-dark: #0a5139;
-  --color-brand-soft: #e2f0e9;
-  --color-remedy: #1f2a44;
-  --color-remedy-soft: #e7e9ef;
-  --color-danger: #b42318;
-  --color-danger-soft: #fdecea;
-  --color-warn: #8a4b08;
-  --color-warn-soft: #fef3d7;
-  --color-info: #1d4e89;
-  --color-info-soft: #e6eef8;
-  --color-accent: #f2b33d;
+  --color-ink: #141413;
+  --color-muted: #5e5d59;
+  --color-faint: #8c8a84;
+  --color-line: #e6e4de;
+  --color-brand: #0c4a34;
+  --color-brand-dark: #083525;
+  --color-brand-soft: #eef4f1;
+  --color-remedy: #182235;
+  --color-remedy-soft: #eff1f5;
+  --color-danger: #9e2a22;
+  --color-danger-soft: #faf0ef;
+  --color-warn: #7c4a0d;
+  --color-warn-soft: #fbf5eb;
+  --color-info: #1b4370;
+  --color-info-soft: #eff4f9;
+  --color-accent: #e5a93c;
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-ink);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 ::selection {
@@ -36,6 +38,6 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-brand);
+  outline: 1.5px solid var(--color-ink);
   outline-offset: 2px;
 }

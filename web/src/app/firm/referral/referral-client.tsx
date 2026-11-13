@@ -51,14 +51,14 @@ function Pack({ token }: { token: string }) {
 
   return (
     <Container>
-      <Link href="/firm/" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><ArrowLeft className="size-4" /> Inbox</Link>
+      <Link href="/firm/" className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink"><ArrowLeft className="size-4" /> Inbox</Link>
       <div className="mb-6 space-y-3">
-        <h1 className="text-3xl font-extrabold tracking-tight">{r.profile?.name ?? 'Remedy client'}</h1>
-        <div className="flex flex-wrap gap-2">
+        <h1 className="font-serif text-3xl font-normal tracking-tight">{r.profile?.name ?? 'Remedy client'}</h1>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
           <Pill tone={st.tone}>{st.text}</Pill>
-          <Pill tone="remedy">{TRIGGER_LABEL[r.trigger]}</Pill>
-          <Pill tone="warn">{r.feeType === 'seed_ready' ? 'Seed-ready' : 'Submission'} fee {money(r.feePence)} (recorded, not charged)</Pill>
-          <span className="text-sm text-muted">Handoff pack · {dateTime(r.createdAt)}</span>
+          <span>{TRIGGER_LABEL[r.trigger]}</span>
+          <span>{r.feeType === 'seed_ready' ? 'Seed-ready' : 'Submission'} fee {money(r.feePence)}, not charged</span>
+          <span>{dateTime(r.createdAt)}</span>
         </div>
       </div>
 
@@ -66,11 +66,11 @@ function Pack({ token }: { token: string }) {
         <div className="space-y-6">
           {r.matters.length ? (
             <section className="space-y-3">
-              <h2 className="text-lg font-bold">Matters</h2>
+              <h2 className="text-sm font-medium text-ink">Matters</h2>
               {r.matters.map((m) => (
                 <Card key={m._id} className="space-y-3">
                   <p className="text-sm text-muted">{m.ref} · {m.topic}</p>
-                  <p className="font-semibold">“{m.question}”</p>
+                  <p className="font-medium">“{m.question}”</p>
                   {m.flags.length ? (
                     <ul className="list-disc space-y-0.5 pl-5 text-sm">{m.flags.map((f) => <li key={f.code}><b>{FLAG_LABELS[f.code] ?? f.code}:</b> {f.reason}</li>)}</ul>
                   ) : null}
@@ -92,10 +92,10 @@ function Pack({ token }: { token: string }) {
           ) : null}
           {r.documents.length ? (
             <section className="space-y-3">
-              <h2 className="text-lg font-bold">Documents</h2>
+              <h2 className="text-sm font-medium text-ink">Documents</h2>
               {r.documents.map((d) => (
                 <Card key={d._id} className="space-y-2">
-                  <a href={d.url ?? undefined} target="_blank" rel="noopener" className="inline-flex items-center gap-2 font-semibold hover:underline"><FileText className="size-4 text-brand" /> {d.label}</a>
+                  <a href={d.url ?? undefined} target="_blank" rel="noopener" className="inline-flex items-center gap-2 font-medium hover:underline"><FileText className="size-4 text-brand" /> {d.label}</a>
                   {d.summary ? <p className="text-sm text-muted">{d.summary}</p> : null}
                   {d.clauses.length ? <ul className="list-disc space-y-0.5 pl-5 text-sm">{d.clauses.map((c, i) => <li key={i}><b>{c.title}</b> ({c.risk}): {c.why}</li>)}</ul> : null}
                 </Card>
@@ -108,7 +108,7 @@ function Pack({ token }: { token: string }) {
         <aside className="space-y-6 lg:sticky lg:top-24">
           {r.status === 'sent' ? (
             <Card className="space-y-3">
-              <h2 className="font-bold">Respond</h2>
+              <h2 className="font-medium">Respond</h2>
               {mode === 'accept' ? (
                 <Field label="Contact name for the client"><Input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="e.g. Sam Patel, Associate" /></Field>
               ) : mode === 'decline' ? (
@@ -151,7 +151,7 @@ function Pack({ token }: { token: string }) {
 
           {r.profile ? (
             <Card className="space-y-1">
-              <h2 className="font-bold">Business profile</h2>
+              <h2 className="font-medium">Business profile</h2>
               <p>{r.profile.name}</p>
               <p className="text-sm text-muted">{r.profile.companyNumber ? `Company number ${r.profile.companyNumber}` : 'No company number given'}</p>
               <p className="text-sm text-muted">{sectorLabel(r.profile.sector)} · {r.profile.headcount} staff · {r.profile.stage}</p>

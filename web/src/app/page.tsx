@@ -1,109 +1,166 @@
-import { ArrowRight, BookOpen, Building2, ClipboardCheck, FileSearch, HeartHandshake, Leaf, MessageSquareText, Scale, ShieldCheck, Sparkles, UserCheck } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 const PRINCIPLES = [
-  { icon: Sparkles, title: 'AI reads and drafts', text: 'It turns what people say, and the letters they photograph, into organised facts and plain-English drafts.' },
-  { icon: ClipboardCheck, title: 'Rules decide', text: 'Eligibility, deadlines and what needs a lawyer come from published criteria and legislation, with a visible trace.' },
-  { icon: UserCheck, title: 'People approve', text: 'A named adviser or lawyer approves anything that leaves the app. Every edit and decision is logged.' },
+  {
+    num: '01',
+    title: 'AI organises and drafts',
+    text: 'Turns spoken stories and photographed letters into structured facts and plain-English drafts.',
+  },
+  {
+    num: '02',
+    title: 'Rules decide',
+    text: 'Eligibility, deadlines and escalation flags come from published criteria and legislation, with a visible trace.',
+  },
+  {
+    num: '03',
+    title: 'People approve',
+    text: 'A named adviser or lawyer approves anything that leaves the app. Every edit and decision is logged.',
+  },
 ];
 
 export default function Home() {
   return (
-    <div>
+    <div className="mx-auto max-w-6xl px-4 sm:px-6">
       {/* Hero */}
-      <section className="mx-auto max-w-7xl px-4 pt-16 pb-12 sm:px-6 lg:pt-24">
-        <p className="inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">
-          <Leaf className="size-4" /> LegalTech in Leeds Hackathon 2026
+      <section className="border-b border-line pt-16 pb-16 sm:pt-24 sm:pb-20">
+        <p className="text-xs font-medium tracking-wider text-muted uppercase">
+          LegalTech in Leeds · 2026
         </p>
-        <h1 className="mt-6 max-w-4xl text-4xl font-extrabold tracking-tight text-balance sm:text-6xl">
+        <h1 className="mt-4 max-w-3xl font-serif text-4xl font-normal tracking-tight text-balance sm:text-6xl sm:leading-[1.08]">
           Legal help that reaches people before the crisis does.
         </h1>
-        <p className="mt-6 max-w-2xl text-lg text-muted">
-          Fewer than 1 in 10 people with a legal problem see a lawyer. Common Counsel gets people in Leeds the crisis support they’re entitled
-          to, and Remedy gives small businesses lawyer-checked answers they can afford.
+        <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+          Fewer than one in ten people with a legal problem see a lawyer. Common Counsel gets people in Leeds the crisis support they are entitled to, and Remedy gives small businesses lawyer-checked answers they can afford.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/help/" className="inline-flex h-14 items-center gap-2 rounded-xl bg-brand px-6 font-semibold text-white hover:bg-brand-dark">
+          <Link
+            href="/help/"
+            className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand px-5 text-sm font-medium text-white transition-colors hover:bg-brand-dark">
             I need help now <ArrowRight className="size-4" />
           </Link>
-          <Link href="/business/" className="inline-flex h-14 items-center gap-2 rounded-xl bg-remedy px-6 font-semibold text-white hover:bg-[#151d31]">
+          <Link
+            href="/business/"
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-line bg-surface px-5 text-sm font-medium text-ink transition-colors hover:border-faint">
             I run a business <ArrowRight className="size-4" />
           </Link>
         </div>
       </section>
 
-      {/* Products */}
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-16 sm:px-6 lg:grid-cols-2">
-        <article className="flex flex-col rounded-3xl bg-brand p-8 text-white">
-          <span className="flex size-12 items-center justify-center rounded-xl bg-white/15"><HeartHandshake className="size-6" /></span>
-          <h2 className="mt-6 text-3xl font-bold">Common Counsel</h2>
-          <p className="mt-2 text-white/85">Food, fuel and crisis support for people in Leeds. Free, no account, any hour.</p>
-          <ul className="mt-6 space-y-3 text-white/90">
-            <Li icon={MessageSquareText}>Tell us what’s happened in your own words. The AI organises it so you never repeat your story.</Li>
-            <Li icon={FileSearch}>Photograph a sanction letter or your meter. We read it, you confirm it.</Li>
-            <Li icon={ClipboardCheck}>An honest pre-check against the Leeds Crisis Payment, food bank and fuel criteria.</Li>
-            <Li icon={UserCheck}>An adviser approves the referral in one click. Deadlines and draft letters for the root cause.</Li>
+      {/* Two Services */}
+      <section className="grid border-b border-line lg:grid-cols-2 lg:divide-x lg:divide-line">
+        <article className="flex flex-col py-12 lg:pr-12">
+          <div className="flex items-center gap-2 text-xs font-medium tracking-wider text-brand uppercase">
+            <span className="size-1.5 rounded-full bg-brand" /> For individuals in Leeds
+          </div>
+          <h2 className="mt-3 font-serif text-3xl font-normal tracking-tight">Common Counsel</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            Food, fuel and crisis support for people in Leeds. Free, no account required, available at any hour.
+          </p>
+          <ul className="mt-8 space-y-4 border-t border-line pt-6 text-sm text-ink">
+            <li className="flex gap-3">
+              <span className="font-mono text-xs text-faint">01</span>
+              <span>Tell us what happened in your own words so you never have to repeat your story.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-mono text-xs text-faint">02</span>
+              <span>Photograph a sanction letter or meter. We extract the details; you confirm them.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-mono text-xs text-faint">03</span>
+              <span>Instant pre-check against Leeds Crisis Payment, food bank and fuel criteria.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-mono text-xs text-faint">04</span>
+              <span>An adviser approves referrals in one click, with deadlines and draft letters for the root cause.</span>
+            </li>
           </ul>
-          <div className="mt-auto flex flex-wrap gap-3 pt-8">
-            <Link href="/help/" className="inline-flex h-11 items-center gap-2 rounded-xl bg-white px-4 font-semibold text-brand">Get help <ArrowRight className="size-4" /></Link>
-            <Link href="/adviser/" className="inline-flex h-11 items-center rounded-xl px-4 font-semibold text-white/90 hover:bg-white/10">Adviser dashboard</Link>
+          <div className="mt-auto flex flex-wrap items-center gap-6 pt-8 text-sm">
+            <Link href="/help/" className="inline-flex items-center gap-1.5 font-medium text-brand hover:underline">
+              Start a check <ArrowRight className="size-3.5" />
+            </Link>
+            <Link href="/adviser/" className="text-muted hover:text-ink">
+              Adviser queue
+            </Link>
           </div>
         </article>
 
-        <article className="flex flex-col rounded-3xl bg-remedy p-8 text-white">
-          <span className="flex size-12 items-center justify-center rounded-xl bg-white/15"><Scale className="size-6" /></span>
-          <h2 className="mt-6 text-3xl font-bold">Remedy</h2>
-          <p className="mt-2 text-white/85">Legal answers for small businesses in England and Wales, checked by a lawyer when it matters.</p>
-          <ul className="mt-6 space-y-3 text-white/90">
-            <Li icon={BookOpen}>Answers that cite the actual legislation, linked to legislation.gov.uk.</Li>
-            <Li icon={ShieldCheck}>Clear flags when something needs legal judgement, then a named lawyer checks it.</Li>
-            <Li icon={FileSearch}>Upload a contract or term sheet and see the clauses worth a closer look.</Li>
-            <Li icon={Building2}>When you grow, a consented handoff to a partner firm, with the referral fee always shown.</Li>
+        <article className="flex flex-col border-t border-line py-12 lg:border-t-0 lg:pl-12">
+          <div className="flex items-center gap-2 text-xs font-medium tracking-wider text-remedy uppercase">
+            <span className="size-1.5 rounded-full bg-remedy" /> For small businesses
+          </div>
+          <h2 className="mt-3 font-serif text-3xl font-normal tracking-tight">Remedy</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            Practical legal answers for small businesses in England and Wales, checked by a named lawyer when it matters.
+          </p>
+          <ul className="mt-8 space-y-4 border-t border-line pt-6 text-sm text-ink">
+            <li className="flex gap-3">
+              <span className="font-mono text-xs text-faint">01</span>
+              <span>Answers grounded in primary legislation, linked directly to legislation.gov.uk.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-mono text-xs text-faint">02</span>
+              <span>Automatic flags when an issue requires legal judgement, routed to a named lawyer.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-mono text-xs text-faint">03</span>
+              <span>Contract and term sheet review that highlights clauses needing closer attention.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-mono text-xs text-faint">04</span>
+              <span>Consented handoff to a partner law firm as you grow, with transparent referral fees.</span>
+            </li>
           </ul>
-          <div className="mt-auto flex flex-wrap gap-3 pt-8">
-            <Link href="/business/" className="inline-flex h-11 items-center gap-2 rounded-xl bg-white px-4 font-semibold text-remedy">Ask Remedy <ArrowRight className="size-4" /></Link>
-            <Link href="/lawyer/" className="inline-flex h-11 items-center rounded-xl px-4 font-semibold text-white/90 hover:bg-white/10">Lawyer portal</Link>
-            <Link href="/firm/" className="inline-flex h-11 items-center rounded-xl px-4 font-semibold text-white/90 hover:bg-white/10">Firm portal</Link>
+          <div className="mt-auto flex flex-wrap items-center gap-6 pt-8 text-sm">
+            <Link href="/business/" className="inline-flex items-center gap-1.5 font-medium text-remedy hover:underline">
+              Open Remedy <ArrowRight className="size-3.5" />
+            </Link>
+            <Link href="/lawyer/" className="text-muted hover:text-ink">
+              Lawyer portal
+            </Link>
+            <Link href="/firm/" className="text-muted hover:text-ink">
+              Partner firm portal
+            </Link>
           </div>
         </article>
       </section>
 
-      {/* Principles */}
-      <section className="border-y border-line bg-surface">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-          <h2 className="text-2xl font-bold">How it stays safe</h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {PRINCIPLES.map((p) => (
-              <div key={p.title} className="space-y-2">
-                <span className="flex size-10 items-center justify-center rounded-lg bg-brand-soft text-brand"><p.icon className="size-5" /></span>
-                <h3 className="font-bold">{p.title}</h3>
-                <p className="text-muted">{p.text}</p>
-              </div>
-            ))}
-          </div>
+      {/* Architecture / Safety */}
+      <section className="border-b border-line py-14">
+        <p className="text-xs font-medium tracking-wider text-muted uppercase">Architecture</p>
+        <h2 className="mt-2 font-serif text-2xl font-normal tracking-tight">How it stays safe</h2>
+        <div className="mt-8 grid gap-8 md:grid-cols-3">
+          {PRINCIPLES.map((p) => (
+            <div key={p.title} className="space-y-2">
+              <p className="font-mono text-xs text-faint">{p.num}</p>
+              <h3 className="text-base font-medium text-ink">{p.title}</h3>
+              <p className="text-sm leading-relaxed text-muted">{p.text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Demo guide */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <h2 className="text-2xl font-bold">Try the demo</h2>
-        <p className="mt-2 text-muted">Open two or three tabs side by side. Everything updates live.</p>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+      {/* Walkthrough */}
+      <section className="py-14">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-baseline">
+          <h2 className="font-serif text-2xl font-normal tracking-tight">Live demo guide</h2>
+          <p className="text-xs text-muted">Open tabs side by side — state syncs in real time.</p>
+        </div>
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
           <Demo
             title="Common Counsel"
             steps={[
-              ['Tab 1', '/help/', 'Tap “I have no food”, answer a few questions, then send it to an adviser.'],
-              ['Tab 2', '/adviser/', 'Sign in with code LEEDS, open the case and approve the referrals.'],
-              ['Tab 1', '/help/wallet/', 'The voucher appears in the wallet.'],
+              ['01', '/help/', 'Select “I have no food”, answer a few questions, and send to an adviser.'],
+              ['02', '/adviser/', 'Sign in with code LEEDS, open the case, and approve the referrals.'],
+              ['03', '/help/wallet/', 'The approved e-voucher appears immediately in the client wallet.'],
             ]}
           />
           <Demo
-            remedy
             title="Remedy"
             steps={[
-              ['Tab 1', '/business/', 'Tap Demo, set up Jade Studio Ltd and ask about hiring a freelancer.'],
-              ['Tab 2', '/lawyer/', 'Sign in with code REMEDY, edit the AI draft and approve.'],
-              ['Tab 3', '/firm/', 'Switch the business to Raising, send a handoff pack, accept it here.'],
+              ['01', '/business/', 'Click Demo to fill Jade Studio Ltd, and ask about hiring a freelancer.'],
+              ['02', '/lawyer/', 'Sign in with code REMEDY, review the AI draft, and approve.'],
+              ['03', '/firm/', 'Switch the business stage to Raising, send a handoff pack, and accept it here.'],
             ]}
           />
         </div>
@@ -112,25 +169,17 @@ export default function Home() {
   );
 }
 
-function Li({ icon: Icon, children }: { icon: typeof Leaf; children: React.ReactNode }) {
+function Demo({ title, steps }: { title: string; steps: [string, string, string][] }) {
   return (
-    <li className="flex gap-3">
-      <Icon className="mt-0.5 size-5 shrink-0 text-white/70" />
-      <span>{children}</span>
-    </li>
-  );
-}
-
-function Demo({ title, steps, remedy }: { title: string; steps: [string, string, string][]; remedy?: boolean }) {
-  return (
-    <div className="rounded-2xl border border-line bg-surface p-6">
-      <h3 className={`font-bold ${remedy ? 'text-remedy' : 'text-brand'}`}>{title}</h3>
-      <ol className="mt-4 space-y-3">
-        {steps.map(([tab, href, text], i) => (
-          <li key={i} className="flex gap-3 text-sm">
-            <span className="w-12 shrink-0 font-semibold text-muted">{tab}</span>
-            <span>
-              <Link href={href} className="font-semibold underline underline-offset-2">{href}</Link> {text}
+    <div className="rounded-xl border border-line bg-surface p-6">
+      <h3 className="text-sm font-semibold text-ink">{title}</h3>
+      <ol className="mt-4 divide-y divide-line">
+        {steps.map(([num, href, text]) => (
+          <li key={num} className="flex gap-4 py-3 first:pt-0 last:pb-0 text-sm">
+            <span className="font-mono text-xs text-faint mt-0.5">{num}</span>
+            <span className="text-muted">
+              <Link href={href} className="font-mono text-xs font-medium text-ink underline underline-offset-2">{href}</Link>{' '}
+              {text}
             </span>
           </li>
         ))}

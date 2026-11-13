@@ -1,5 +1,6 @@
 import { ConvexError, v } from 'convex/values';
 import { mutation, query } from './_generated/server';
+import { deleteDraftsFor } from './drafting';
 import { audit, getBusiness, newToken, requireBusiness, sha256 } from './lib/auth';
 import { businessStage } from './lib/remedySchema';
 import { TRACTION_THRESHOLD } from './lib/traction';
@@ -92,6 +93,7 @@ export const deleteMyData = mutation({
   args: { token: v.string() },
   handler: async (ctx, { token }) => {
     const b = await requireBusiness(ctx, token);
+    await deleteDraftsFor(ctx, { businessId: b._id });
     const matters = await ctx.db.query('matters').withIndex('by_businessId', (q) => q.eq('businessId', b._id)).take(200);
     for (const m of matters) {
       const docs = await ctx.db.query('documents').withIndex('by_matterId', (q) => q.eq('matterId', m._id)).take(50);

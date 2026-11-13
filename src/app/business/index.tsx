@@ -7,7 +7,9 @@ import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, St
 import { BusinessNotice, EmptyCard, FlagChips, RemedyHeader, STAGES, StatusBadge, TOPIC_LABELS, sectorLabel, type MatterStatus, type Stage } from '@/components/remedy';
 import { Banner, Button, Card, Chip, IconButton, Ionicons, ProgressBar, Screen, T, type IconName } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
+import { draftHref, newDraftHref } from '@/lib/drafting';
 import { errorMessage, shortDate } from '@/lib/format';
+import { looksLikeDraftRequest } from '@convex/lib/drafting/templates';
 import { useSession } from '@/lib/session';
 import { api } from '@convex/_generated/api';
 
@@ -46,6 +48,7 @@ function Home({ token, me, onSignOut }: { token: string; me: Me; onSignOut: () =
   const matters = useQuery(api.matters.mine, { token });
   const suggestions = useQuery(api.firms.suggestions, { token });
   const ask = useMutation(api.matters.ask);
+  const drafts = useQuery(api.drafting.mine, { kind: 'business', token });
   const deleteMyData = useMutation(api.business.deleteMyData);
   const [question, setQuestion] = useState('');
   const [busy, setBusy] = useState(false);
@@ -136,7 +139,35 @@ function Home({ token, me, onSignOut }: { token: string; me: Me; onSignOut: () =
                 </Pressable>
               ))}
             </View>
+            {looksLikeDraftRequest(question) ? (
+              <Card onPress={() => router.push(newDraftHref('business', { text: question }))} style={{ flexDirection: 'row', alignItems: 'center', gap: S.md, backgroundColor: '#E7E9EF' }}>
+                <Ionicons name="document-text" size={22} color={C.remedy} />
+                <T kind="small" style={{ flex: 1, fontWeight: '600' }}>Sounds like you need a document drafted. Tap to draft it with Remedy.</T>
+                <Ionicons name="chevron-forward" size={18} color={C.remedy} />
+              </Card>
+            ) : null}
             {error ? <Banner tone="danger" icon="alert-circle">{error}</Banner> : null}
+          </View>
+
+          <View style={{ gap: S.md }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <T kind="heading" style={{ flex: 1 }}>Documents</T>
+              <Button title="Draft" icon="add" onPress={() => router.push(newDraftHref('business'))} style={{ minHeight: 40, paddingHorizontal: S.md, backgroundColor: C.remedy }} />
+            </View>
+            {drafts?.length ? (
+              drafts.map((d) => (
+                <Card key={d._id} onPress={() => router.push(draftHref('business', d._id))} style={{ flexDirection: 'row', alignItems: 'center', gap: S.md, padding: S.md }}>
+                  <Ionicons name="document-text-outline" size={22} color={C.remedy} />
+                  <View style={{ flex: 1 }}>
+                    <T kind="label" numberOfLines={1}>{d.title}</T>
+                    <T kind="small" muted>{d.status === 'generated' ? `PDF ready · version ${d.version}` : 'In progress'} · {d.ref}</T>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={C.faint} />
+                </Card>
+              ))
+            ) : (
+              <T kind="small" muted>NDAs, freelancer agreements and letters before action for unpaid invoices, drafted in a short chat.</T>
+            )}
           </View>
 
           <View style={{ gap: S.md }}>

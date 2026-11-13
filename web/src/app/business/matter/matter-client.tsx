@@ -31,13 +31,13 @@ export default function MatterClient() {
 
   return (
     <Container>
-      <Link href="/business/" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><ArrowLeft className="size-4" /> All matters</Link>
+      <Link href="/business/" className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink"><ArrowLeft className="size-4" /> All matters</Link>
       <div className="mb-8 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={m.status} checkedBy={m.checkedBy} />
           <span className="text-sm text-muted">{TOPIC_LABELS[m.topic] ?? m.topic} · {m.ref} · {dateTime(m.createdAt)}</span>
         </div>
-        <h1 className="max-w-4xl text-3xl font-extrabold tracking-tight">{m.question}</h1>
+        <h1 className="max-w-4xl font-serif text-3xl font-normal tracking-tight">{m.question}</h1>
       </div>
       <div className="grid items-start gap-8 lg:grid-cols-[1.6fr_1fr]">
         <Answer m={m} token={token} />
@@ -72,16 +72,16 @@ function Answer({ m, token }: { m: Matter; token: string }) {
   return (
     <div className="space-y-6">
       {m.status === 'answering' ? (
-        <div className="flex flex-col items-center gap-2 rounded-2xl border border-line bg-surface py-12 text-center">
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-line bg-surface py-12 text-center">
           <Loader2 className="size-6 animate-spin text-remedy" />
-          <p className="font-semibold">Reading the legislation…</p>
+          <p className="font-medium">Reading the legislation…</p>
           <p className="max-w-sm text-sm text-muted">Remedy is finding the relevant sections and drafting an answer. This takes a few seconds.</p>
         </div>
       ) : null}
 
       {m.status === 'awaiting_client' && lawyerAsk ? (
-        <div className="space-y-3 rounded-2xl border-[1.5px] border-danger bg-surface p-5">
-          <p className="inline-flex items-center gap-2 font-semibold"><MessageCircle className="size-5 text-danger" /> {lawyerAsk.name ?? 'Our lawyer'} needs a bit more information</p>
+        <div className="space-y-3 rounded-xl border border-danger bg-surface p-5">
+          <p className="inline-flex items-center gap-2 font-medium"><MessageCircle className="size-5 text-danger" /> {lawyerAsk.name ?? 'Our lawyer'} needs a bit more information</p>
           <p>{lawyerAsk.text}</p>
           <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your answer…" />
           {error ? <Banner tone="danger">{error}</Banner> : null}
@@ -90,10 +90,10 @@ function Answer({ m, token }: { m: Matter; token: string }) {
       ) : null}
 
       {checked ? (
-        <article className="space-y-4 rounded-2xl border-[1.5px] border-brand bg-surface p-6">
+        <article className="space-y-4 rounded-xl border border-brand bg-surface p-6">
           <div className="flex flex-wrap items-center gap-2">
             <ShieldCheck className="size-5 text-brand" />
-            <p className="flex-1 font-semibold text-brand">Checked by {m.checkedBy}, Remedy lawyer</p>
+            <p className="flex-1 font-medium text-brand">Checked by {m.checkedBy}, Remedy lawyer</p>
             {m.checkedAt ? <span className="text-sm text-muted">{dateTime(m.checkedAt)}</span> : null}
           </div>
           <p className="leading-relaxed whitespace-pre-wrap">{m.finalAnswer}</p>
@@ -105,12 +105,12 @@ function Answer({ m, token }: { m: Matter; token: string }) {
       ) : null}
 
       {!checked && m.draft && m.status !== 'answering' ? (
-        <article className={cx('space-y-4 rounded-2xl border bg-surface p-6', flagged ? 'border-[1.5px] border-warn' : 'border-line')}>
-          <p className="inline-flex items-center gap-2 font-semibold text-info"><Sparkles className="size-4" /> {flagged ? 'AI draft · our lawyer is checking this' : 'AI answer'}</p>
+        <article className={cx('space-y-4 rounded-xl border bg-surface p-6', flagged ? 'border border-warn' : 'border-line')}>
+          <p className="inline-flex items-center gap-2 font-medium text-info"><Sparkles className="size-4" /> {flagged ? 'AI draft · our lawyer is checking this' : 'AI answer'}</p>
           <p className="leading-relaxed whitespace-pre-wrap">{m.draft.answer}</p>
           {m.draft.nextStep ? (
             <div className="rounded-xl bg-bg p-4">
-              <p className="text-xs font-bold tracking-wider text-muted uppercase">Next step</p>
+              <p className="text-[11px] font-medium tracking-wider text-muted uppercase">Next step</p>
               <p className="text-sm">{m.draft.nextStep}</p>
             </div>
           ) : null}
@@ -128,11 +128,11 @@ function Answer({ m, token }: { m: Matter; token: string }) {
       ) : null}
 
       {flagged && m.status !== 'answering' ? (
-        <section className="space-y-3 rounded-2xl border border-line bg-surface p-5">
-          <h2 className="text-lg font-bold">What needs a lawyer, and why</h2>
+        <section className="space-y-3 rounded-xl border border-line bg-surface p-5">
+          <h2 className="text-sm font-medium text-ink">What needs a lawyer, and why</h2>
           {m.flags.map((f) => (
             <div key={f.code} className="space-y-0.5 border-t border-line pt-3 first-of-type:border-0 first-of-type:pt-0">
-              <p className="inline-flex items-center gap-1.5 font-semibold"><Flag className="size-4 text-warn" /> {FLAG_LABELS[f.code] ?? f.code}</p>
+              <p className="inline-flex items-center gap-1.5 font-medium"><Flag className="size-4 text-warn" /> {FLAG_LABELS[f.code] ?? f.code}</p>
               <p className="text-sm text-muted">{f.reason}</p>
             </div>
           ))}
@@ -140,10 +140,10 @@ function Answer({ m, token }: { m: Matter; token: string }) {
       ) : null}
 
       {m.status === 'referral_suggested' ? (
-        <Link href="/business/firms/" className="flex items-center gap-4 rounded-2xl bg-remedy-soft p-5">
+        <Link href="/business/firms/" className="flex items-center gap-4 rounded-xl bg-remedy-soft p-5">
           <Building2 className="size-6 text-remedy" />
           <div className="flex-1">
-            <p className="font-semibold">Our lawyer recommends a partner firm</p>
+            <p className="font-medium">Our lawyer recommends a partner firm</p>
             <p className="text-sm text-muted">See the suggested firms and choose what to share.</p>
           </div>
           <ChevronRight className="size-5 text-faint" />
@@ -152,9 +152,9 @@ function Answer({ m, token }: { m: Matter; token: string }) {
 
       {m.messages.length ? (
         <section className="space-y-2">
-          <h2 className="text-lg font-bold">Messages</h2>
+          <h2 className="text-sm font-medium text-ink">Messages</h2>
           {m.messages.map((x) => (
-            <div key={x._id} className={cx('max-w-[90%] rounded-2xl p-3 text-sm', x.from === 'client' ? 'ml-auto bg-brand-soft' : 'border border-line bg-surface')}>
+            <div key={x._id} className={cx('max-w-[90%] rounded-xl p-3 text-sm', x.from === 'client' ? 'ml-auto bg-brand-soft' : 'border border-line bg-surface')}>
               <p className="text-muted">{x.from === 'client' ? 'You' : `${x.name ?? 'Lawyer'} · Remedy`} · {dateTime(x.at)}</p>
               <p>{x.text}</p>
             </div>
@@ -217,15 +217,15 @@ function Documents({ m, token }: { m: Matter; token: string }) {
   }
 
   return (
-    <aside className="space-y-4 rounded-2xl border border-line bg-surface p-5 lg:sticky lg:top-24">
+    <aside className="space-y-4 rounded-xl border border-line bg-surface p-5 lg:sticky lg:top-24">
       <div>
-        <h2 className="text-lg font-bold">Documents</h2>
+        <h2 className="text-sm font-medium text-ink">Documents</h2>
         <p className="text-sm text-muted">Remedy highlights the clauses worth a closer look. You see them before anything goes to our lawyer.</p>
       </div>
       {m.documents.map((d) => (
         <div key={d._id} className="space-y-2 rounded-xl border border-line p-3">
           <div className="flex items-center gap-2">
-            <p className="flex-1 text-sm font-semibold capitalize">{d.kind.replace(/_/g, ' ')}</p>
+            <p className="flex-1 text-sm font-medium capitalize">{d.kind.replace(/_/g, ' ')}</p>
             {d.submitted ? (
               <Pill tone="brand">Sent to lawyer</Pill>
             ) : (
@@ -242,7 +242,7 @@ function Documents({ m, token }: { m: Matter; token: string }) {
               {d.clauses.map((c, i) => (
                 <div key={i} className={cx('space-y-1 border-l-[3px] py-1 pl-3', RISK[c.risk].border)}>
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="flex-1 text-sm font-semibold">{c.title}</p>
+                    <p className="flex-1 text-sm font-medium">{c.title}</p>
                     <Pill tone={RISK[c.risk].tone}>{RISK[c.risk].label}</Pill>
                   </div>
                   {c.text ? <p className="text-sm italic">“{c.text}”</p> : null}

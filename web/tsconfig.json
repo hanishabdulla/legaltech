@@ -34,6 +34,9 @@
       ],
       "convex/values": [
         "./node_modules/convex/dist/esm-types/values/index.d.ts"
+      ],
+      "pdf-lib": [
+        "./node_modules/pdf-lib/cjs/index.d.ts"
       ]
     }
   },

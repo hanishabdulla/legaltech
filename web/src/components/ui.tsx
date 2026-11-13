@@ -10,10 +10,10 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'remedy' | 'outlin
 
 const VARIANTS: Record<Variant, string> = {
   primary: 'bg-brand text-white hover:bg-brand-dark',
-  remedy: 'bg-remedy text-white hover:bg-[#151d31]',
-  secondary: 'bg-brand-soft text-brand hover:bg-[#d3e8dd]',
-  outline: 'border border-line bg-surface text-ink hover:bg-bg',
-  ghost: 'text-brand hover:bg-brand-soft',
+  remedy: 'bg-remedy text-white hover:bg-[#101726]',
+  secondary: 'bg-brand-soft text-brand hover:bg-[#e1ece6]',
+  outline: 'border border-line bg-surface text-ink hover:border-faint hover:bg-bg',
+  ghost: 'text-muted hover:bg-line/40 hover:text-ink',
   danger: 'text-danger hover:bg-danger-soft',
 };
 
@@ -32,8 +32,8 @@ export function Button({
       {...props}
       disabled={disabled || loading}
       className={cx(
-        'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-45',
-        size === 'sm' ? 'h-9 px-3 text-sm' : size === 'lg' ? 'h-14 px-6 text-base' : 'h-11 px-4 text-[15px]',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45',
+        size === 'sm' ? 'h-8 px-3 text-xs' : size === 'lg' ? 'h-12 px-5 text-sm' : 'h-10 px-4 text-sm',
         VARIANTS[variant],
         className,
       )}>
@@ -55,8 +55,8 @@ export function ButtonLink({ href, variant = 'primary', icon: Icon, size = 'md',
     <Link
       href={href}
       className={cx(
-        'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors',
-        size === 'sm' ? 'h-9 px-3 text-sm' : size === 'lg' ? 'h-14 px-6 text-base' : 'h-11 px-4 text-[15px]',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors',
+        size === 'sm' ? 'h-8 px-3 text-xs' : size === 'lg' ? 'h-12 px-5 text-sm' : 'h-10 px-4 text-sm',
         VARIANTS[variant],
         className,
       )}>
@@ -67,10 +67,10 @@ export function ButtonLink({ href, variant = 'primary', icon: Icon, size = 'md',
 }
 
 export function Card({ className, children, onClick }: { className?: string; children: ReactNode; onClick?: () => void }) {
-  const base = 'rounded-2xl border border-line bg-surface p-5';
+  const base = 'rounded-xl border border-line bg-surface p-5';
   if (onClick) {
     return (
-      <button type="button" onClick={onClick} className={cx(base, 'block w-full text-left transition hover:border-faint hover:shadow-sm', className)}>
+      <button type="button" onClick={onClick} className={cx(base, 'block w-full text-left transition-colors hover:border-faint', className)}>
         {children}
       </button>
     );
@@ -79,10 +79,10 @@ export function Card({ className, children, onClick }: { className?: string; chi
 }
 
 const TONES = {
-  info: { cls: 'bg-info-soft text-info', icon: Info },
-  warn: { cls: 'bg-warn-soft text-warn', icon: TriangleAlert },
-  danger: { cls: 'bg-danger-soft text-danger', icon: AlertCircle },
-  success: { cls: 'bg-brand-soft text-brand', icon: CheckCircle2 },
+  info: { cls: 'border-l-2 border-info bg-info-soft/60 text-ink', iconCls: 'text-info', icon: Info },
+  warn: { cls: 'border-l-2 border-warn bg-warn-soft/60 text-ink', iconCls: 'text-warn', icon: TriangleAlert },
+  danger: { cls: 'border-l-2 border-danger bg-danger-soft/60 text-ink', iconCls: 'text-danger', icon: AlertCircle },
+  success: { cls: 'border-l-2 border-brand bg-brand-soft/60 text-ink', iconCls: 'text-brand', icon: CheckCircle2 },
 } as const;
 
 export function Banner({ tone = 'info', title, icon, children, className }: {
@@ -95,33 +95,41 @@ export function Banner({ tone = 'info', title, icon, children, className }: {
   const t = TONES[tone];
   const Icon = icon ?? t.icon;
   return (
-    <div className={cx('flex gap-3 rounded-xl p-4', t.cls, className)} role={tone === 'danger' ? 'alert' : undefined}>
-      <Icon className="mt-0.5 size-5 shrink-0" />
-      <div className="min-w-0 flex-1 space-y-1">
-        {title ? <p className="font-semibold">{title}</p> : null}
-        {children ? <div className="text-sm text-ink">{children}</div> : null}
+    <div className={cx('flex gap-3 rounded-r-lg px-4 py-3 text-sm', t.cls, className)} role={tone === 'danger' ? 'alert' : undefined}>
+      <Icon className={cx('mt-0.5 size-4 shrink-0', t.iconCls)} />
+      <div className="min-w-0 flex-1 space-y-0.5">
+        {title ? <p className="font-medium text-ink">{title}</p> : null}
+        {children ? <div className="text-muted">{children}</div> : null}
       </div>
     </div>
   );
 }
 
-export function Pill({ children, tone = 'muted', icon: Icon, className }: {
+export function Pill({ children, tone = 'muted', className }: {
   children: ReactNode;
   tone?: 'brand' | 'info' | 'warn' | 'danger' | 'muted' | 'remedy';
   icon?: LucideIcon;
   className?: string;
 }) {
-  const cls = {
-    brand: 'bg-brand-soft text-brand',
-    info: 'bg-info-soft text-info',
-    warn: 'bg-warn-soft text-warn',
-    danger: 'bg-danger-soft text-danger',
-    muted: 'bg-[#eef0ee] text-muted',
-    remedy: 'bg-remedy-soft text-remedy',
+  const dot = {
+    brand: 'bg-brand',
+    info: 'bg-info',
+    warn: 'bg-warn',
+    danger: 'bg-danger',
+    muted: 'bg-faint',
+    remedy: 'bg-remedy',
+  }[tone];
+  const text = {
+    brand: 'text-brand',
+    info: 'text-info',
+    warn: 'text-warn',
+    danger: 'text-danger',
+    muted: 'text-muted',
+    remedy: 'text-remedy',
   }[tone];
   return (
-    <span className={cx('inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold', cls, className)}>
-      {Icon ? <Icon className="size-3.5" /> : null}
+    <span className={cx('inline-flex items-center gap-1.5 text-xs font-medium', text, className)}>
+      <span className={cx('size-1.5 rounded-full', dot)} />
       {children}
     </span>
   );
@@ -129,30 +137,30 @@ export function Pill({ children, tone = 'muted', icon: Icon, className }: {
 
 export function Spinner({ label, className }: { label?: string; className?: string }) {
   return (
-    <div className={cx('flex flex-col items-center justify-center gap-3 py-16 text-muted', className)}>
-      <Loader2 className="size-7 animate-spin text-brand" />
+    <div className={cx('flex flex-col items-center justify-center gap-2.5 py-16 text-muted', className)}>
+      <Loader2 className="size-5 animate-spin text-ink" />
       {label ? <p className="text-sm">{label}</p> : null}
     </div>
   );
 }
 
 const inputCls =
-  'w-full rounded-xl border-[1.5px] border-line bg-surface px-4 text-[16px] text-ink placeholder:text-faint focus:border-brand focus:outline-none';
+  'w-full rounded-lg border border-line bg-surface px-3.5 text-sm text-ink placeholder:text-faint transition-colors focus:border-ink focus:outline-none';
 
 export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={cx(inputCls, 'h-12', className)} />;
+  return <input {...props} className={cx(inputCls, 'h-10', className)} />;
 }
 
 export function Textarea({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea {...props} className={cx(inputCls, 'min-h-28 py-3 leading-relaxed', className)} />;
+  return <textarea {...props} className={cx(inputCls, 'min-h-28 py-2.5 leading-relaxed', className)} />;
 }
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
-    <label className="block space-y-2">
+    <label className="block space-y-1.5">
       <span className="block">
-        <span className="block font-semibold">{label}</span>
-        {hint ? <span className="block text-sm text-muted">{hint}</span> : null}
+        <span className="block text-sm font-medium text-ink">{label}</span>
+        {hint ? <span className="block text-xs text-muted">{hint}</span> : null}
       </span>
       {children}
     </label>
@@ -162,10 +170,10 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
 export function Check({ label, hint, checked, onChange }: { label: ReactNode; hint?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="flex cursor-pointer items-start gap-3 py-1">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-[var(--color-brand)]" />
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 size-4 shrink-0 accent-[var(--color-ink)]" />
       <span className="space-y-0.5">
-        <span className="block text-sm font-semibold">{label}</span>
-        {hint ? <span className="block text-sm text-muted">{hint}</span> : null}
+        <span className="block text-sm text-ink">{label}</span>
+        {hint ? <span className="block text-xs text-muted">{hint}</span> : null}
       </span>
     </label>
   );
@@ -178,8 +186,8 @@ export function Chip({ selected, onClick, children }: { selected?: boolean; onCl
       onClick={onClick}
       aria-pressed={selected}
       className={cx(
-        'rounded-full border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors',
-        selected ? 'border-brand bg-brand text-white' : 'border-line bg-surface hover:bg-brand-soft',
+        'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
+        selected ? 'border-ink bg-ink text-white' : 'border-line bg-surface text-muted hover:border-faint hover:text-ink',
       )}>
       {children}
     </button>
@@ -194,18 +202,18 @@ export function Option({ label, hint, selected, multi, onClick }: { label: strin
       aria-checked={selected}
       onClick={onClick}
       className={cx(
-        'flex w-full items-center gap-3 rounded-xl border-[1.5px] px-4 py-3.5 text-left transition-colors',
-        selected ? 'border-brand bg-[#f2f9f5]' : 'border-line bg-surface hover:bg-[#f0f3ee]',
+        'flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors',
+        selected ? 'border-ink bg-surface' : 'border-line bg-surface hover:border-faint',
       )}>
       <span className="flex-1">
-        <span className={cx('block font-semibold', selected && 'text-brand')}>{label}</span>
-        {hint ? <span className="block text-sm text-muted">{hint}</span> : null}
+        <span className="block text-sm font-medium text-ink">{label}</span>
+        {hint ? <span className="block text-xs text-muted">{hint}</span> : null}
       </span>
       <span
         className={cx(
-          'flex size-6 shrink-0 items-center justify-center border-2 text-white',
-          multi ? 'rounded-md' : 'rounded-full',
-          selected ? 'border-brand bg-brand' : 'border-[#c4ccc6]',
+          'flex size-4 shrink-0 items-center justify-center border text-[10px] text-white',
+          multi ? 'rounded-xs' : 'rounded-full',
+          selected ? 'border-ink bg-ink' : 'border-faint',
         )}>
         {selected ? '✓' : null}
       </span>
@@ -215,29 +223,26 @@ export function Option({ label, hint, selected, multi, onClick }: { label: strin
 
 export function Progress({ value, className }: { value: number; className?: string }) {
   return (
-    <div className={cx('h-1.5 overflow-hidden rounded-full bg-line', className)}>
-      <div className="h-full rounded-full bg-brand transition-all" style={{ width: `${Math.round(Math.min(1, Math.max(0, value)) * 100)}%` }} />
+    <div className={cx('h-1 overflow-hidden rounded-full bg-line', className)}>
+      <div className="h-full bg-ink transition-all" style={{ width: `${Math.round(Math.min(1, Math.max(0, value)) * 100)}%` }} />
     </div>
   );
 }
 
 export function Stat({ label, value, tone }: { label: string; value: number | string; tone?: 'danger' | 'warn' | 'brand' }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface px-4 py-3">
-      <p className={cx('text-2xl font-bold', tone === 'danger' ? 'text-danger' : tone === 'warn' ? 'text-warn' : tone === 'brand' ? 'text-brand' : 'text-ink')}>{value}</p>
-      <p className="text-sm text-muted">{label}</p>
+    <div className="border-l border-line pl-4">
+      <p className={cx('font-serif text-3xl font-medium tracking-tight tabular-nums', tone === 'danger' ? 'text-danger' : tone === 'warn' ? 'text-warn' : tone === 'brand' ? 'text-brand' : 'text-ink')}>{value}</p>
+      <p className="text-xs text-muted">{label}</p>
     </div>
   );
 }
 
-export function Empty({ icon: Icon, title, text, children }: { icon: LucideIcon; title: string; text: string; children?: ReactNode }) {
+export function Empty({ title, text, children }: { icon?: LucideIcon; title: string; text: string; children?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-line bg-surface px-6 py-10 text-center">
-      <span className="flex size-12 items-center justify-center rounded-full bg-bg text-muted">
-        <Icon className="size-6" />
-      </span>
-      <p className="font-semibold">{title}</p>
-      <p className="max-w-sm text-sm text-muted">{text}</p>
+    <div className="rounded-xl border border-dashed border-line px-6 py-10 text-center">
+      <p className="text-sm font-medium text-ink">{title}</p>
+      <p className="mx-auto mt-1 max-w-sm text-xs text-muted">{text}</p>
       {children}
     </div>
   );
@@ -246,12 +251,12 @@ export function Empty({ icon: Icon, title, text, children }: { icon: LucideIcon;
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <h2 className="text-lg font-bold">{children}</h2>
+      <h2 className="text-sm font-semibold text-ink">{children}</h2>
       {action}
     </div>
   );
 }
 
 export function Caption({ children, className }: { children: ReactNode; className?: string }) {
-  return <p className={cx('text-xs font-bold uppercase tracking-wider text-muted', className)}>{children}</p>;
+  return <p className={cx('text-[11px] font-medium uppercase tracking-wider text-muted', className)}>{children}</p>;
 }

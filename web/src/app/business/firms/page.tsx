@@ -71,8 +71,8 @@ export default function FirmsPage() {
 
   return (
     <Container>
-      <Link href="/business/" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><ArrowLeft className="size-4" /> Dashboard</Link>
-      <h1 className="mb-8 text-3xl font-extrabold tracking-tight">Partner law firms</h1>
+      <Link href="/business/" className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink"><ArrowLeft className="size-4" /> Dashboard</Link>
+      <h1 className="mb-8 font-serif text-3xl font-normal tracking-tight">Partner law firms</h1>
 
       <div className="grid items-start gap-8 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-6">
@@ -86,7 +86,7 @@ export default function FirmsPage() {
           ) : (
             <>
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold">{TRIGGER_TITLE[s.trigger.trigger]}</h2>
+                <h2 className="font-serif text-2xl font-normal tracking-tight">{TRIGGER_TITLE[s.trigger.trigger]}</h2>
                 <p className="text-muted">{s.trigger.reason}</p>
               </div>
               <Banner tone="info" icon={Banknote} title="How Remedy is paid">
@@ -102,16 +102,16 @@ export default function FirmsPage() {
                       type="button"
                       disabled={done}
                       onClick={() => setFirmId(on ? null : f._id)}
-                      className={cx('space-y-2 rounded-2xl border-[1.5px] bg-surface p-5 text-left transition', on ? 'border-brand bg-[#f2f9f5]' : 'border-line hover:border-faint', done && 'opacity-50')}>
+                      className={cx('space-y-2 rounded-xl border bg-surface p-5 text-left transition', on ? 'border-brand bg-[#f2f9f5]' : 'border-line hover:border-faint', done && 'opacity-50')}>
                       <div className="flex items-center gap-2">
                         <Building2 className="size-5 text-remedy" />
-                        <span className="flex-1 font-semibold">{f.name}</span>
+                        <span className="flex-1 font-medium">{f.name}</span>
                         {on ? <CheckCircle2 className="size-5 text-brand" /> : null}
                       </div>
                       {f.licence === 'anchor' ? <Pill tone="remedy">Anchor firm</Pill> : null}
                       <p className="text-sm text-muted">{f.city} · {f.sectors.includes('any') ? 'All sectors' : f.sectors.map(sectorLabel).join(', ')}</p>
                       <p className="text-sm">{f.blurb}</p>
-                      <p className="text-sm font-semibold text-warn">Remedy receives a referral fee of {money(fee)} if you choose this firm.</p>
+                      <p className="text-sm font-medium text-warn">Remedy receives a referral fee of {money(fee)} if you choose this firm.</p>
                       {done ? <p className="text-sm text-muted">Already sent</p> : null}
                     </button>
                   );
@@ -124,7 +124,7 @@ export default function FirmsPage() {
         <aside className="space-y-6 lg:sticky lg:top-24">
           {firmId ? (
             <Card className="space-y-3">
-              <h2 className="text-lg font-bold">What to share</h2>
+              <h2 className="text-sm font-medium text-ink">What to share</h2>
               <p className="text-sm text-muted">Only ticked items go in the pack. Your lawyer’s private notes are never shared.</p>
               <Check label="Business profile" hint="Name, company number, sector, team size and stage" checked={profile} onChange={setProfile} />
               <Check label="Matters" hint="Your questions, the answers and any notes our lawyer marked shareable" checked={shareMatters} onChange={setShareMatters} />
@@ -150,11 +150,11 @@ export default function FirmsPage() {
 
           {s.referrals.length ? (
             <section className="space-y-3">
-              <h2 className="text-lg font-bold">Your referrals</h2>
+              <h2 className="text-sm font-medium text-ink">Your referrals</h2>
               {s.referrals.map((r) => (
                 <Card key={r._id} className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <p className="flex-1 font-semibold">{r.firm}</p>
+                    <p className="flex-1 font-medium">{r.firm}</p>
                     <Pill tone={r.status === 'accepted' ? 'brand' : r.status === 'declined' ? 'danger' : 'info'}>
                       {r.status === 'accepted' ? 'Accepted' : r.status === 'declined' ? 'Declined' : 'Sent'}
                     </Pill>

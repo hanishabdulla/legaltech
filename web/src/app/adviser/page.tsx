@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from 'convex/react';
 import type { FunctionReturnType } from 'convex/server';
-import { Coffee, Flag, Heart, Hourglass, LogOut, Zap } from 'lucide-react';
+import { Coffee, Flag, LogOut } from 'lucide-react';
 import Link from 'next/link';
 
 import { OutcomePill, type Outcome } from '@/components/cc';
@@ -30,9 +30,9 @@ function Queue({ token, name, org, onSignOut }: { token: string; name: string; o
     <Container>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-brand">Common Counsel · {org}</p>
-          <h1 className="text-3xl font-extrabold tracking-tight">Adviser queue</h1>
-          <p className="text-muted">Signed in as {name}. Urgent and safeguarding cases first. Updates live.</p>
+          <p className="text-[11px] font-medium tracking-wider text-brand uppercase">Common Counsel · {org}</p>
+          <h1 className="font-serif text-3xl font-normal tracking-tight">Adviser queue</h1>
+          <p className="text-sm text-muted">{name}</p>
         </div>
         <Button variant="outline" icon={LogOut} onClick={async () => { await signOut({ token }).catch(() => {}); onSignOut(); }}>Sign out</Button>
       </div>
@@ -46,7 +46,7 @@ function Queue({ token, name, org, onSignOut }: { token: string; name: string; o
             <Stat label="Decided" value={queue.recent.length} tone="brand" />
           </div>
           <section className="space-y-4">
-            <h2 className="text-lg font-bold">To review</h2>
+            <h2 className="text-sm font-medium text-ink">To review</h2>
             {queue.open.length === 0 ? (
               <Empty icon={Coffee} title="Queue is clear" text="New cases appear here live when someone sends theirs." />
             ) : (
@@ -55,7 +55,7 @@ function Queue({ token, name, org, onSignOut }: { token: string; name: string; o
           </section>
           {queue.recent.length ? (
             <section className="space-y-4">
-              <h2 className="text-lg font-bold">Recently decided</h2>
+              <h2 className="text-sm font-medium text-ink">Recently decided</h2>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{queue.recent.map((c) => <QueueCard key={c._id} c={c} />)}</div>
             </section>
           ) : null}
@@ -70,15 +70,15 @@ function QueueCard({ c }: { c: Row }) {
   return (
     <Link
       href={`/adviser/case/?id=${c._id}`}
-      className={cx('flex flex-col gap-3 rounded-2xl border bg-surface p-5 transition hover:shadow-sm', c.urgency === 'urgent' ? 'border-danger border-[1.5px]' : 'border-line hover:border-faint')}>
+      className={cx('flex flex-col gap-3 rounded-xl border bg-surface p-5 transition', c.urgency === 'urgent' ? 'border-danger/40' : 'border-line hover:border-faint')}>
       <div className="flex flex-wrap items-center gap-2">
-        {c.safeguarding ? <Pill tone="danger" icon={Heart}>Safeguarding</Pill> : null}
-        {c.urgency === 'urgent' ? <Pill tone="danger" icon={Zap}>Urgent</Pill> : null}
-        {c.pending ? <Pill tone="warn" icon={Hourglass}>{c.pending} to decide</Pill> : <Pill tone="brand">{c.status.replace('_', ' ')}</Pill>}
+        <Pill tone={c.safeguarding || c.urgency === 'urgent' ? 'danger' : c.pending ? 'warn' : 'brand'}>
+          {c.safeguarding ? 'Safeguarding' : c.urgency === 'urgent' ? 'Urgent' : c.pending ? `${c.pending} to decide` : c.status.replace('_', ' ')}
+        </Pill>
         <span className="ml-auto text-xs text-muted">{shortDate(c.submittedAt)}</span>
       </div>
       <div className="space-y-0.5">
-        {lines.map((l, i) => <p key={i} className={i === 0 ? 'font-semibold' : 'text-sm text-muted'}>{l}</p>)}
+        {lines.map((l, i) => <p key={i} className={i === 0 ? 'font-medium' : 'text-sm text-muted'}>{l}</p>)}
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-1.5">
         {c.outcomes.map((o) => (

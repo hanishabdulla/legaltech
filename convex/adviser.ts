@@ -1,6 +1,7 @@
 import { ConvexError, v } from 'convex/values';
 import type { Doc, Id } from './_generated/dataModel';
 import { mutation, query, type MutationCtx } from './_generated/server';
+import { draftsForCase } from './drafting';
 import { sendReferral } from './integrations';
 import { audit, requireStaff } from './lib/auth';
 import { factChips, type FactKey } from './lib/facts';
@@ -79,6 +80,7 @@ export const getCase = query({
       referrals: referrals.map((r) => ({ ...r, info: SCHEME_INFO[r.scheme as SchemeId], decidedByName: r.decidedBy ? staffNames[r.decidedBy] : undefined })),
       actions,
       log: log.map((l) => ({ _id: l._id, actor: l.actor, event: l.event, at: l.at })),
+      drafts: await draftsForCase(ctx, caseId),
     };
   },
 });

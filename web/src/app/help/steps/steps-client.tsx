@@ -144,7 +144,7 @@ export default function StepsClient() {
 
       <div key={step.id} className="space-y-6">
         <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight">{step.title}</h1>
+          <h1 className="font-serif text-3xl font-normal tracking-tight">{step.title}</h1>
           {step.help ? <p className="text-muted">{step.help}</p> : null}
         </div>
 
@@ -157,7 +157,7 @@ export default function StepsClient() {
         {step.id === 'age' ? single(YES_NO, facts.age16Plus === undefined ? undefined : facts.age16Plus ? 'yes' : 'no', (id) => set({ age16Plus: id === 'yes' })) : null}
         {step.id === 'postcode' ? (
           <Input
-            className="max-w-40 text-lg font-semibold uppercase"
+            className="max-w-40 text-lg font-medium uppercase"
             value={facts.postcodeDistrict ?? ''}
             placeholder="LS9"
             onChange={(e) => {
@@ -205,14 +205,14 @@ export default function StepsClient() {
 
 function Counter({ label, sub, value, min, onChange }: { label: string; sub: string; value: number; min: number; onChange: (n: number) => void }) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border-[1.5px] border-line bg-surface p-4">
+    <div className="flex items-center gap-4 rounded-xl border border-line bg-surface p-4">
       <div className="flex-1">
-        <p className="font-semibold">{label}</p>
+        <p className="font-medium">{label}</p>
         <p className="text-sm text-muted">{sub}</p>
       </div>
       <div className="flex items-center gap-1 rounded-full bg-bg p-1">
         <button type="button" aria-label={`Fewer ${label}`} onClick={() => onChange(Math.max(min, value - 1))} className="rounded-full p-2 hover:bg-line"><Minus className="size-4" /></button>
-        <span className="w-8 text-center text-lg font-bold">{value}</span>
+        <span className="w-8 text-center text-sm font-medium text-ink">{value}</span>
         <button type="button" aria-label={`More ${label}`} onClick={() => onChange(Math.min(12, value + 1))} className="rounded-full p-2 hover:bg-line"><Plus className="size-4" /></button>
       </div>
     </div>

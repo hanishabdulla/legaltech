@@ -2,7 +2,7 @@
 
 import { useAction, useMutation, useQuery } from 'convex/react';
 import type { FunctionReturnType } from 'convex/server';
-import { ArrowLeft, ArrowUp, CheckCircle2, CloudOff, FileUp, Heart, ListChecks, Loader2, MessageCircle, Send, Sparkles, Trash2, Wallet } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUp, CheckCircle2, FileSignature, CloudOff, FileUp, Heart, ListChecks, Loader2, MessageCircle, Send, Sparkles, Trash2, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -23,6 +23,7 @@ import {
 } from '@/components/cc';
 import { Container, useIdParam } from '@/components/page';
 import { Banner, Button, Card, Pill, Spinner } from '@/components/ui';
+import { draftHref, newDraftHref } from '@/lib/drafting';
 import { cx, errorMessage, longDate, shortDate } from '@/lib/format';
 import { useToken } from '@/lib/session';
 import { api } from '@convex/_generated/api';
@@ -48,7 +49,7 @@ export default function CaseClient() {
   return (
     <Container>
       <div className="mb-6 flex items-center gap-3">
-        <Link href="/help/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink">
+        <Link href="/help/" className="inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink">
           <ArrowLeft className="size-4" /> All cases
         </Link>
         <span className="text-sm text-faint">·</span>
@@ -66,6 +67,7 @@ export default function CaseClient() {
 // ---------------- Intake (conversational) ----------------
 
 function Intake({ c, token }: { c: CaseView; token: string }) {
+  const router = useRouter();
   const turn = useAction(api.intake.turn);
   const assess = useAction(api.intake.assess);
   const removeFact = useMutation(api.cases.removeFact);
@@ -85,6 +87,7 @@ function Intake({ c, token }: { c: CaseView; token: string }) {
     try {
       const res = await turn({ token, caseId: c._id, text: message.trim() });
       setAiFailed(res.aiFailed);
+      if (res.draftId) router.push(draftHref('client', res.draftId));
     } catch (err) {
       setError(errorMessage(err));
     } finally {
@@ -127,19 +130,26 @@ function Intake({ c, token }: { c: CaseView; token: string }) {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
-      <section className="flex min-h-[60vh] flex-col rounded-3xl border border-line bg-surface">
+      <section className="flex min-h-[60vh] flex-col rounded-xl border border-line bg-surface">
         <div className="border-b border-line px-6 py-4">
-          <h1 className="text-xl font-bold">Tell us more</h1>
+          <h1 className="text-xl font-medium">Tell us more</h1>
           <p className="text-sm text-muted">Answer in your own words, or tap a suggestion.</p>
         </div>
         <div className="flex-1 space-y-3 overflow-y-auto px-6 py-5" style={{ maxHeight: '60vh' }}>
           {c.transcript.map((m, i) => (
-            <div key={i} className={cx('max-w-[85%] rounded-2xl px-4 py-3', m.role === 'client' ? 'ml-auto rounded-br-md bg-brand text-white' : 'rounded-bl-md border border-line bg-bg')}>
-              {m.text}
+            <div key={i} className={cx('max-w-[85%] space-y-2', m.role === 'client' && 'ml-auto')}>
+              <div className={cx('rounded-xl px-4 py-3', m.role === 'client' ? 'rounded-br-md bg-brand text-white' : 'rounded-bl-md border border-line bg-bg')}>{m.text}</div>
+              {m.draftId ? (
+                <Link href={draftHref('client', m.draftId)} className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3 hover:border-brand">
+                  <FileSignature className="size-5 text-brand" />
+                  <span className="flex-1 font-medium">Write the letter with me</span>
+                  <ArrowRight className="size-4 text-brand" />
+                </Link>
+              ) : null}
             </div>
           ))}
           {thinking ? (
-            <div className="inline-flex items-center gap-2 rounded-2xl rounded-bl-md border border-line bg-bg px-4 py-3 text-muted">
+            <div className="inline-flex items-center gap-2 rounded-xl rounded-bl-md border border-line bg-bg px-4 py-3 text-muted">
               <Loader2 className="size-4 animate-spin text-brand" /> Reading that…
             </div>
           ) : null}
@@ -153,7 +163,7 @@ function Intake({ c, token }: { c: CaseView; token: string }) {
           {!thinking && q && !c.intakeDone ? (
             <div className="flex flex-wrap gap-2">
               {q.suggestions.map((s) => (
-                <button key={s} type="button" onClick={() => send(s)} className="rounded-full border-[1.5px] border-line px-3.5 py-1.5 text-sm font-semibold hover:border-brand hover:bg-brand-soft">
+                <button key={s} type="button" onClick={() => send(s)} className="rounded-full border border-line px-3.5 py-1.5 text-sm font-medium hover:border-brand hover:bg-brand-soft">
                   {s}
                 </button>
               ))}
@@ -179,15 +189,16 @@ function Intake({ c, token }: { c: CaseView; token: string }) {
                 }}
                 rows={1}
                 placeholder="Type your answer"
-                className="max-h-32 min-h-12 flex-1 resize-none rounded-3xl border-[1.5px] border-line bg-surface px-4 py-3 focus:border-brand focus:outline-none"
+                className="max-h-32 min-h-12 flex-1 resize-none rounded-xl border border-line bg-surface px-4 py-3 focus:border-brand focus:outline-none"
               />
               <button type="submit" aria-label="Send" disabled={!text.trim() || thinking} className="flex size-12 items-center justify-center rounded-full bg-brand text-white disabled:opacity-40">
                 <ArrowUp className="size-5" />
               </button>
             </form>
           )}
-          <div className="flex flex-wrap justify-between gap-2 text-sm font-bold">
+          <div className="flex flex-wrap justify-between gap-2 text-sm font-medium">
             <Link href={`/help/steps/?id=${c._id}`} className="text-brand">Answer step by step instead</Link>
+            <Link href={newDraftHref('client', { caseId: c._id })} className="text-brand">Need a letter written?</Link>
             {!c.intakeDone && enough ? (
               <button type="button" onClick={check} className="text-brand">Skip to results</button>
             ) : null}
@@ -197,7 +208,7 @@ function Intake({ c, token }: { c: CaseView; token: string }) {
 
       <aside className="space-y-6">
         <Card className="space-y-3">
-          <p className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-brand uppercase"><Sparkles className="size-3.5" /> We understood</p>
+          <p className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-wider text-brand uppercase"><Sparkles className="size-3.5" /> We understood</p>
           {c.chips.length ? (
             <>
               <FactChips chips={c.chips} onRemove={(key) => removeFact({ token, caseId: c._id, key })} />
@@ -253,7 +264,7 @@ function Documents({ c, token }: { c: CaseView; token: string }) {
   return (
     <Card className="space-y-4">
       <div>
-        <p className="font-bold">Add a letter or meter photo</p>
+        <p className="font-medium">Add a letter or meter photo</p>
         <p className="text-sm text-muted">Optional. We read it for you, and nothing counts until you say it’s right.</p>
       </div>
       {c.documents.map((d) => {
@@ -266,7 +277,7 @@ function Documents({ c, token }: { c: CaseView; token: string }) {
                 <img src={d.url} alt="" className="size-14 shrink-0 rounded-lg bg-bg object-cover" />
               ) : null}
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold capitalize">{d.kind.replace(/_/g, ' ')}</p>
+                <p className="text-sm font-medium capitalize">{d.kind.replace(/_/g, ' ')}</p>
                 {d.status === 'reading' ? (
                   <p className="inline-flex items-center gap-1.5 text-sm text-muted"><Loader2 className="size-3.5 animate-spin" /> Reading it now…</p>
                 ) : (
@@ -292,7 +303,7 @@ function Documents({ c, token }: { c: CaseView; token: string }) {
           </div>
         );
       })}
-      <select value={kind} onChange={(e) => setKind(e.target.value)} className="h-11 w-full rounded-xl border-[1.5px] border-line bg-surface px-3 text-sm">
+      <select value={kind} onChange={(e) => setKind(e.target.value)} className="h-11 w-full rounded-xl border border-line bg-surface px-3 text-sm">
         {DOC_KINDS.map((k) => <option key={k.id} value={k.id}>{k.label}</option>)}
       </select>
       <input ref={input} type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
@@ -330,8 +341,8 @@ function Result({ c, token }: { c: CaseView; token: string }) {
       <section className="space-y-5">
         <div className="space-y-3">
           <AiBadge />
-          <h1 className="text-3xl font-extrabold tracking-tight">{worthSending.length ? 'Here’s what you could get' : 'We couldn’t find a match this time'}</h1>
-          {c.clientSummary ? <p className="text-lg text-muted">{c.clientSummary}</p> : null}
+          <h1 className="font-serif text-3xl font-normal tracking-tight">{worthSending.length ? 'Here’s what you could get' : 'We couldn’t find a match this time'}</h1>
+          {c.clientSummary ? <p className="text-base leading-relaxed text-muted">{c.clientSummary}</p> : null}
         </div>
         {c.eligibility.map((e) => (
           <SchemeCard
@@ -353,7 +364,7 @@ function Result({ c, token }: { c: CaseView; token: string }) {
         {food ? (
           <Card className="space-y-3">
             <div>
-              <p className="font-bold">If food help is approved, where would you like to shop?</p>
+              <p className="font-medium">If food help is approved, where would you like to shop?</p>
               <p className="text-sm text-muted">Demo: an approved referral shows as a supermarket e-voucher in your wallet.</p>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -362,7 +373,7 @@ function Result({ c, token }: { c: CaseView; token: string }) {
                   key={r}
                   type="button"
                   onClick={() => setRetailer({ token, caseId: c._id, retailer: r })}
-                  className={cx('flex items-center gap-2 rounded-xl border-[1.5px] p-2.5 text-sm font-semibold', r === retailer ? 'border-current' : 'border-line')}
+                  className={cx('flex items-center gap-2 rounded-xl border p-2.5 text-sm font-medium', r === retailer ? 'border-current' : 'border-line')}
                   style={r === retailer ? { color: RETAILER_COLORS[r], backgroundColor: `${RETAILER_COLORS[r]}12` } : undefined}>
                   <span className="flex size-7 items-center justify-center rounded-md text-white" style={{ backgroundColor: RETAILER_COLORS[r] }}>{r[0]}</span>
                   <span className="text-ink">{r}</span>
@@ -376,7 +387,7 @@ function Result({ c, token }: { c: CaseView; token: string }) {
           {worthSending.length ? (
             <Button size="lg" icon={Send} loading={busy} onClick={send}>Send to an adviser</Button>
           ) : null}
-          <Link href={`/help/plan/?id=${c._id}`} className="inline-flex h-14 items-center gap-2 rounded-xl px-6 font-semibold text-brand hover:bg-brand-soft">
+          <Link href={`/help/plan/?id=${c._id}`} className="inline-flex h-14 items-center gap-2 rounded-xl px-6 font-medium text-brand hover:bg-brand-soft">
             <ListChecks className="size-4" /> Your action plan
           </Link>
         </div>
@@ -384,9 +395,9 @@ function Result({ c, token }: { c: CaseView; token: string }) {
       </section>
       <aside className="space-y-6">
         <Card className="space-y-3">
-          <p className="text-xs font-bold tracking-wider text-muted uppercase">Based on</p>
+          <p className="text-[11px] font-medium tracking-wider text-muted uppercase">Based on</p>
           <FactChips chips={c.chips} />
-          <Link href={`/help/steps/?id=${c._id}`} className="text-sm font-bold text-brand">Change my answers</Link>
+          <Link href={`/help/steps/?id=${c._id}`} className="text-sm font-medium text-brand">Change my answers</Link>
         </Card>
         <PlanTeaser c={c} />
         <Documents c={c} token={token} />
@@ -399,12 +410,12 @@ function PlanTeaser({ c }: { c: CaseView }) {
   if (!c.actions.length) return null;
   const first = c.actions.find((a) => a.deadline);
   return (
-    <Link href={`/help/plan/?id=${c._id}`} className="block rounded-2xl border border-line bg-warn-soft p-5 hover:border-warn">
-      <p className="font-bold">Sorting out the cause</p>
+    <Link href={`/help/plan/?id=${c._id}`} className="block rounded-xl border border-line bg-warn-soft p-5 hover:border-warn">
+      <p className="font-medium">Sorting out the cause</p>
       <p className="mt-1 text-sm">
         {first?.deadline ? `${first.title}: by ${longDate(first.deadline)}` : `${c.actions.length} thing${c.actions.length === 1 ? '' : 's'} to sort out the cause`}
       </p>
-      <p className="mt-2 text-sm font-bold text-warn">See your action plan →</p>
+      <p className="mt-2 text-sm font-medium text-warn">See your action plan →</p>
     </Link>
   );
 }
@@ -434,8 +445,8 @@ function Track({ c }: { c: CaseView }) {
     <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
       <section className="space-y-6">
         <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight">{decided ? (anyApproved ? 'Your help is approved' : 'An adviser has looked at your case') : 'An adviser is on it'}</h1>
-          <p className="text-lg text-muted">{decided ? 'Here’s what was decided.' : 'You don’t need to explain everything again. Your summary has been sent with your case.'}</p>
+          <h1 className="font-serif text-3xl font-normal tracking-tight">{decided ? (anyApproved ? 'Your help is approved' : 'An adviser has looked at your case') : 'An adviser is on it'}</h1>
+          <p className="text-base leading-relaxed text-muted">{decided ? 'Here’s what was decided.' : 'You don’t need to explain everything again. Your summary has been sent with your case.'}</p>
         </div>
         {c.adviserMessage ? <Banner tone="info" icon={MessageCircle} title="Message from your adviser">{c.adviserMessage}</Banner> : null}
         {c.vouchers.length ? (
@@ -444,20 +455,20 @@ function Track({ c }: { c: CaseView }) {
             <div className="grid gap-4 sm:grid-cols-2">
               {c.vouchers.map((v) => <VoucherCard key={v._id} voucher={v} href={`/help/wallet/?v=${v._id}`} />)}
             </div>
-            <Link href="/help/wallet/" className="inline-flex items-center gap-2 font-bold text-brand"><Wallet className="size-4" /> Open my wallet</Link>
+            <Link href="/help/wallet/" className="inline-flex items-center gap-2 font-medium text-brand"><Wallet className="size-4" /> Open my wallet</Link>
           </div>
         ) : null}
         <div className="space-y-3">
-          <h2 className="text-lg font-bold">Referrals</h2>
+          <h2 className="text-sm font-medium text-ink">Referrals</h2>
           {c.referrals.map((r) => {
             const e = c.eligibility.find((x) => x.scheme === r.scheme);
             return (
               <Card key={r._id} className="space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <p className="flex-1 font-semibold">{r.info?.name ?? r.scheme}</p>
+                  <p className="flex-1 font-medium">{r.info?.name ?? r.scheme}</p>
                   {e ? <OutcomePill outcome={e.outcome as Outcome} /> : null}
                 </div>
-                <p className={cx('text-sm font-bold', r.status === 'rejected' ? 'text-danger' : r.status === 'pending' ? 'text-muted' : 'text-brand')}>{REFERRAL_STATUS[r.status]}</p>
+                <p className={cx('text-sm font-medium', r.status === 'rejected' ? 'text-danger' : r.status === 'pending' ? 'text-muted' : 'text-brand')}>{REFERRAL_STATUS[r.status]}</p>
                 {r.status === 'rejected' && r.reason ? <p className="text-sm text-muted">Reason: {r.reason}</p> : null}
                 {r.status === 'sent' && r.scheme === 'leeds_crisis_payment' ? (
                   <p className="text-sm text-muted">Your pre-filled application is ready. Leeds City Council makes the final decision.</p>
