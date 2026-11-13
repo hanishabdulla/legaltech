@@ -433,7 +433,7 @@ ${toTidy.map((f) => `${f.key} (${f.label}):\n${clientText(draft.answers[f.key])}
     const merged = { ...draft.answers, ...tidied };
     const model = template.render(merged, helpers(merged, template.fields, today));
     const reference = draftRef(draftId);
-    const brand = template.product === 'cc' ? 'Common Counsel' : 'Remedy';
+    const brand = 'Remedy';
     const { bytes, pages } = await renderPdf(model, { reference, brand });
     const storageId = await ctx.storage.store(new Blob([bytes as BlobPart], { type: 'application/pdf' }));
     const version: number = await ctx.runMutation(internal.drafting.saveGenerated, { draftId, storageId, pages, tidied, today });
@@ -685,7 +685,7 @@ export const saveGenerated = internalMutation({
   },
 });
 
-/** Adds a message to a Common Counsel case chat (used when the intake spots a drafting request). */
+/** Adds a message to a Remedy case chat (used when the intake spots a drafting request). */
 export const noteInCase = internalMutation({
   args: { caseId: v.id('cases'), clientText: v.string(), assistantText: v.string(), draftId: v.optional(v.id('drafts')) },
   handler: async (ctx, { caseId, clientText, assistantText, draftId }) => {

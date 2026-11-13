@@ -7,7 +7,7 @@ import { useState, type ReactNode } from 'react';
 import { Pill } from '@/components/ui';
 import { cx, daysLeft, money, shortDate, voucherStatus } from '@/lib/format';
 
-/** Shared Common Counsel (MVP 1) pieces. */
+/** Shared Remedy (MVP 1) pieces. */
 
 export const LANGUAGES = [
   { id: 'en', label: 'English' },

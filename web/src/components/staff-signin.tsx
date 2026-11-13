@@ -15,7 +15,7 @@ const ORGS = ['Leeds Citizens Advice', 'Community Hub (Harehills)', 'Uni law cli
 
 const COPY = {
   adviser: {
-    sub: 'Common Counsel',
+    sub: 'Remedy',
     title: 'Adviser sign in',
     text: 'Review cases, approve referrals and edit case notes.',
     code: 'LEEDS',

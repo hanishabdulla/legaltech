@@ -120,7 +120,7 @@ export default function NewDraft() {
           {!remedy && !token ? (
             <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: consent }} onPress={() => setConsent(!consent)} style={styles.consent}>
               <View style={[styles.box, consent && { backgroundColor: C.primary, borderColor: C.primary }]}>{consent ? <Ionicons name="checkmark" size={15} color="#fff" /> : null}</View>
-              <T kind="small" style={{ flex: 1 }}>I agree that Common Counsel can save the details I put in my letter, so I can edit it later. I can delete it at any time.</T>
+              <T kind="small" style={{ flex: 1 }}>I agree that Remedy can save the details I put in my letter, so I can edit it later. I can delete it at any time.</T>
             </Pressable>
           ) : null}
 

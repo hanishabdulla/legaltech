@@ -7,12 +7,12 @@ import { usePathname } from 'next/navigation';
 import { cx } from '@/lib/format';
 
 const NAV = [
-  { href: '/help/', label: 'Common Counsel', match: '/help' },
-  { href: '/business/', label: 'Remedy', match: '/business' },
+  { href: '/help/', label: 'Personal support', match: '/help' },
+  { href: '/business/', label: 'For businesses', match: '/business' },
 ];
 
 const STAFF = [
-  { href: '/adviser/', label: 'Adviser queue', sub: 'Common Counsel' },
+  { href: '/adviser/', label: 'Adviser queue', sub: 'Remedy' },
   { href: '/lawyer/', label: 'Lawyer portal', sub: 'Remedy' },
   { href: '/firm/', label: 'Partner firm', sub: 'Remedy' },
 ];
@@ -26,7 +26,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-8 px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5 text-sm font-semibold tracking-tight text-ink">
           <span className={cx('size-2 rounded-full', remedy ? 'bg-remedy' : 'bg-brand')} />
-          <span className="font-serif text-lg font-medium tracking-normal">{remedy ? 'Remedy' : 'Common Counsel'}</span>
+          <span className="font-serif text-lg font-medium tracking-normal">Remedy</span>
         </Link>
 
         <nav className="flex items-center gap-6 text-sm">
@@ -68,7 +68,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-line">
       <div className="mx-auto flex max-w-6xl flex-col justify-between gap-2 px-4 py-8 text-xs text-muted sm:flex-row sm:items-center sm:px-6">
-        <p className="font-medium text-ink">Common Counsel &amp; Remedy</p>
+        <p className="font-medium text-ink">Remedy</p>
         <p>LegalTech in Leeds prototype · Demo data only, not legal advice.</p>
       </div>
     </footer>

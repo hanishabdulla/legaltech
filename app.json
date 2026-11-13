@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "Common Counsel",
-    "slug": "common-counsel",
+    "name": "Remedy",
+    "slug": "remedy",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "commoncounsel",
+    "scheme": "remedy",
     "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.cysliac.common-counsel"
+      "bundleIdentifier": "com.cysliac.remedy"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,8 +23,8 @@
     "web": {
       "output": "single",
       "favicon": "./assets/images/favicon.png",
-      "name": "Common Counsel",
-      "shortName": "Common Counsel",
+      "name": "Remedy",
+      "shortName": "Remedy",
       "description": "Help with food, fuel and crisis support in Leeds, checked by an adviser.",
       "themeColor": "#0E6B4E",
       "backgroundColor": "#F5F6F2",

@@ -130,7 +130,7 @@ export default function NewDraftClient() {
           <Check
             checked={consent}
             onChange={setConsent}
-            label="I agree that Common Counsel can save the details I put in my letter, so I can edit it later. I can delete it at any time."
+            label="I agree that Remedy can save the details I put in my letter, so I can edit it later. I can delete it at any time."
           />
         </div>
       ) : null}

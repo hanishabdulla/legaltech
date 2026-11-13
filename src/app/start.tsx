@@ -97,7 +97,7 @@ export default function Start() {
           <View style={styles.header}>
             <View style={styles.brand}>
               <IconBubble name="leaf" size={34} />
-              <T kind="heading">Common Counsel</T>
+              <T kind="heading">Remedy</T>
             </View>
             <ExitButton />
           </View>
@@ -174,7 +174,7 @@ export default function Start() {
                   {consent ? <Ionicons name="checkmark" size={16} color="#fff" /> : null}
                 </View>
                 <T kind="small" style={{ flex: 1 }}>
-                  I agree that Common Counsel can save what I share, including health information like food needs, so an adviser can help me. I can delete it at any time.
+                  I agree that Remedy can save what I share, including health information like food needs, so an adviser can help me. I can delete it at any time.
                 </T>
               </Pressable>
               <Pressable onPress={() => setShowPrivacy((s) => !s)} hitSlop={6}>

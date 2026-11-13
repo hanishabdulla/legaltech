@@ -10,7 +10,7 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 const newsreader = Newsreader({ variable: '--font-newsreader', subsets: ['latin'], style: ['normal', 'italic'] });
 
 export const metadata: Metadata = {
-  title: { default: 'Common Counsel · Remedy', template: '%s · Common Counsel' },
+  title: { default: 'Remedy', template: '%s · Remedy' },
   description: 'Crisis support for people in Leeds, and lawyer-checked answers for small businesses.',
 };
 

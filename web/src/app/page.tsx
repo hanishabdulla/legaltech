@@ -31,7 +31,7 @@ export default function Home() {
           Legal help that reaches people before the crisis does.
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-          Fewer than one in ten people with a legal problem see a lawyer. Common Counsel gets people in Leeds the crisis support they are entitled to, and Remedy gives small businesses lawyer-checked answers they can afford.
+          Fewer than one in ten people with a legal problem see a lawyer. Remedy gets people in Leeds the crisis support they are entitled to, and Remedy gives small businesses lawyer-checked answers they can afford.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
@@ -53,7 +53,7 @@ export default function Home() {
           <div className="flex items-center gap-2 text-xs font-medium tracking-wider text-brand uppercase">
             <span className="size-1.5 rounded-full bg-brand" /> For individuals in Leeds
           </div>
-          <h2 className="mt-3 font-serif text-3xl font-normal tracking-tight">Common Counsel</h2>
+          <h2 className="mt-3 font-serif text-3xl font-normal tracking-tight">Remedy</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             Food, fuel and crisis support for people in Leeds. Free, no account required, available at any hour.
           </p>
@@ -148,7 +148,7 @@ export default function Home() {
         </div>
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           <Demo
-            title="Common Counsel"
+            title="Remedy"
             steps={[
               ['01', '/help/', 'Select “I have no food”, answer a few questions, and send to an adviser.'],
               ['02', '/adviser/', 'Sign in with code LEEDS, open the case, and approve the referrals.'],

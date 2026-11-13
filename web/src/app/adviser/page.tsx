@@ -30,7 +30,7 @@ function Queue({ token, name, org, onSignOut }: { token: string; name: string; o
     <Container>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-[11px] font-medium tracking-wider text-brand uppercase">Common Counsel · {org}</p>
+          <p className="text-[11px] font-medium tracking-wider text-brand uppercase">Remedy · {org}</p>
           <h1 className="font-serif text-3xl font-normal tracking-tight">Adviser queue</h1>
           <p className="text-sm text-muted">{name}</p>
         </div>

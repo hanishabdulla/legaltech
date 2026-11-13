@@ -13,7 +13,7 @@ export const draftMessage = v.object({
 
 export const draftTables = {
   /**
-   * A document being drafted in chat. Owned by an anonymous Common Counsel
+   * A document being drafted in chat. Owned by an anonymous Remedy
    * client (optionally linked to a case) or a Remedy business (optionally
    * linked to a matter). Answers are kept so the person can edit and re-create.
    */

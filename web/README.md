@@ -1,11 +1,11 @@
-# Common Counsel · Remedy website (Next.js)
+# Remedy website (Next.js)
 
 A desktop-first website for both products, built with Next.js 16 (App Router), Tailwind CSS 4 and lucide icons. It talks to the **same Convex backend** as the Expo app (`../convex`), so a case started on the phone app shows up live on the website and vice versa.
 
 | Route | What |
 |---|---|
 | `/` | Landing page for both products, with a demo guide |
-| `/help/` | Common Counsel: "What's happened?", language, consent, your cases, delete my data |
+| `/help/` | Remedy: "What's happened?", language, consent, your cases, delete my data |
 | `/help/case/?id=` | One page per case: AI intake chat → pre-check results → status tracker, with document upload |
 | `/help/steps/?id=` | Step-by-step fallback |
 | `/help/plan/?id=` | Action plan (deadlines, draft letter, handoffs) |
@@ -31,4 +31,4 @@ npm run build      # static site in web/out
 
 Shared code comes straight from `../convex` (`@convex/_generated/api`, `@convex/lib/facts`, `@convex/lib/questions`); `turbopack.root` is the repo root to allow that. Sessions are demo tokens in `localStorage` (same keys as the Expo app).
 
-The production Convex deployment currently has Common Counsel only. Deploy the Remedy backend (`npx convex deploy`, then `npx convex run --prod seed:run`) before pointing a production build at it.
+The production Convex deployment currently has Remedy only. Deploy the Remedy backend (`npx convex deploy`, then `npx convex run --prod seed:run`) before pointing a production build at it.

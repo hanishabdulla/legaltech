@@ -62,7 +62,7 @@ const signOff = (h: Helpers, formal: boolean) => ({
 const para = (text: string): Block => ({ t: 'p', text: /[.!?:;)"’”]$/.test(text.trim()) ? text.trim() : `${text.trim()}.` });
 
 // ---------------------------------------------------------------------------
-// Common Counsel: letters for people
+// Remedy: letters for people
 // ---------------------------------------------------------------------------
 
 const mandatoryReconsideration: Template = {

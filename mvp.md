@@ -1,7 +1,7 @@
-# Common Counsel: MVP technical plan
+# Remedy: MVP technical plan
 
 Status: draft, written 13 November 2026 against `main` at `5f20598`.
-Scope: what has to be built to turn the current food and energy voucher prototype into the Common Counsel MVP described on the team's Miro board (Type 1: food, fuel and crisis support in Leeds, under English law).
+Scope: what has to be built to turn the current food and energy voucher prototype into the Remedy MVP described on the team's Miro board (Type 1: food, fuel and crisis support in Leeds, under English law).
 
 The plan has two horizons:
 
@@ -39,7 +39,7 @@ The AI exists but sits at the edges:
 - **Intake is a fixed questionnaire.** The free-text "your situation" box comes last and is only passed to the model as context. Nothing is extracted from it.
 - **The AI cannot see documents, does not hold a conversation, does not route, and does not identify the legal problem behind the crisis.**
 
-### Gaps against the Common Counsel concept
+### Gaps against the Remedy concept
 
 | # | Gap | Where in code | Why it matters |
 |---|---|---|---|

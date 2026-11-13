@@ -138,7 +138,7 @@ export default function HelpStart() {
               <Check
                 checked={consent}
                 onChange={setConsent}
-                label="I agree that Common Counsel can save what I share, including health information like food needs, so an adviser can help me. I can delete it at any time."
+                label="I agree that Remedy can save what I share, including health information like food needs, so an adviser can help me. I can delete it at any time."
               />
               <details className="text-sm">
                 <summary className="cursor-pointer font-medium text-brand">How we use your information</summary>

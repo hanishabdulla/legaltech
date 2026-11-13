@@ -1,4 +1,4 @@
-# Common Counsel: food, fuel and crisis support MVP
+# Remedy: food, fuel and crisis support MVP
 
 Expo (SDK 58, Expo Router) + Convex + Gemini. Built for the LegalTech in Leeds Hackathon from `mvp.md`. Nothing here is real: no real vouchers, referrals or council applications.
 
@@ -52,10 +52,10 @@ Known gaps (pilot work): Convex Auth instead of demo tokens/codes; matter summar
 
 Ask for a document in chat and get a PDF back in the chat. **The AI picks the template, collects answers and tidies the person's own words; the legal wording is fixed template text (partner-firm review is required before pilot use); every answer is validated in code.**
 
-- **Common Counsel letters:** mandatory reconsideration (with one-month / 13-month rules), landlord repairs (LTA 1985 ss.9A, 11), deposit return, payment offer to a creditor, subject access request (UK GDPR Art. 15).
+- **Remedy letters:** mandatory reconsideration (with one-month / 13-month rules), landlord repairs (LTA 1985 ss.9A, 11), deposit return, payment offer to a creditor, subject access request (UK GDPR Art. 15).
 - **Remedy documents:** mutual or one-way NDA, freelancer services agreement, letter before action for an unpaid invoice (Late Payment Act interest and s.5A compensation for business debtors; Pre-Action Protocol and 30 days for individuals).
 - **Refused:** wills and probate, property transfers, leases, court and tribunal forms, family law, powers of attorney, shareholder and employment documents. Each points somewhere that can help.
-- **Where:** "write me a letter…" in the Common Counsel chat starts a draft; "Write this letter with me" on the action plan; "Need a letter written?" on the start page; "Draft a document" on the Remedy dashboard (and a prompt when a question sounds like a drafting request). Advisers see a client's drafted letters on the case.
+- **Where:** "write me a letter…" in the Remedy chat starts a draft; "Write this letter with me" on the action plan; "Need a letter written?" on the start page; "Draft a document" on the Remedy dashboard (and a prompt when a question sounds like a drafting request). Advisers see a client's drafted letters on the case.
 - Answers are editable; "Leave blank" puts a line on the PDF for things like an NI number; consequential yes/no answers are always asked directly; PDFs are versioned.
 
 | Path | What |
@@ -68,7 +68,7 @@ Ask for a document in chat and get a PDF back in the chat. **The AI picks the te
 
 ## Website (Next.js, `web/`)
 
-A desktop-first Next.js site for both products (landing page, Common Counsel client + adviser, Remedy business + lawyer + firm) on the same Convex backend. See `web/README.md`. Run with `cd web && npm run dev`.
+A desktop-first Next.js site for both products (landing page, Remedy client + adviser, Remedy business + lawyer + firm) on the same Convex backend. See `web/README.md`. Run with `cd web && npm run dev`.
 
 ## Web app
 
