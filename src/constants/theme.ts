@@ -1,65 +1,34 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://unistyl.es/), etc.
- */
-
-import '@/global.css';
-
-import { Platform } from 'react-native';
-
-export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
+export const C = {
+  bg: '#F5F6F2',
+  surface: '#FFFFFF',
+  text: '#16231D',
+  muted: '#5C6B64',
+  faint: '#8A968F',
+  border: '#E3E7E1',
+  primary: '#0E6B4E',
+  primaryPressed: '#0A5139',
+  primarySoft: '#E2F0E9',
+  accent: '#F2B33D',
+  danger: '#B42318',
+  dangerSoft: '#FDECEA',
+  warn: '#8A4B08',
+  warnSoft: '#FEF3D7',
+  info: '#1D4E89',
+  infoSoft: '#E6EEF8',
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export const S = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
+export const R = { sm: 10, md: 16, lg: 22, pill: 999 } as const;
+export const MaxWidth = 560;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
-
-export const Spacing = {
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 16,
-  four: 24,
-  five: 32,
-  six: 64,
-} as const;
-
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+/** Brand-ish colours for voucher cards. */
+export const RETAILER_COLORS: Record<string, string> = {
+  Tesco: '#00539F',
+  Asda: '#3E8E1A',
+  'Sainsbury’s': '#E86A10',
+  Aldi: '#1B2A6B',
+  Lidl: '#0050AA',
+  Morrisons: '#00563F',
+  'Co-op': '#0A7FA8',
+  'Prepayment meter top-up': '#7A3E9D',
+};

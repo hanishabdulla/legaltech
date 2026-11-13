@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "legaltech",
-    "slug": "legaltech",
+    "name": "Common Counsel",
+    "slug": "common-counsel",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "legaltech",
-    "userInterfaceStyle": "automatic",
+    "scheme": "commoncounsel",
+    "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon"
     },
@@ -20,7 +20,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "server",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -28,7 +28,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#0E6B4E",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }

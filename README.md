@@ -1,56 +1,32 @@
-# Welcome to your Expo app 👋
+# Common Counsel — food & energy voucher prototype
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo (SDK 58, Expo Router) + Convex + Gemini. Built for the LegalTech in Leeds Hackathon. Nothing here is real: no identity checks, no real vouchers.
 
-## Get started
+## Flow
 
-1. Install dependencies
+1. **Sign in** with first name, National Insurance number and date of birth (format check only; try `QQ 12 34 56 C`).
+2. **Check**: 9 questions modelled on food bank referral and Household Support Fund forms (household, reasons, benefits, income, food left, cooking, diet, energy, own words).
+3. **AI follow-ups**: Gemini (lite) asks up to 2 tailored questions with tap-to-answer chips.
+4. **Decision**: fixed rules (`convex/lib/policy.ts`) set eligibility, voucher values and the 3-per-6-months limit. Gemini can only *add* eligibility, and writes the explanation, other help, any safety notice and an adviser case note.
+5. **Claim**: pick a supermarket. A food e-voucher (30 days), plus an energy top-up voucher (90 days) for people who can't top up their meter.
+6. **Wallet**: active / used / expired vouchers, with QR code, code, PIN, validity and "mark as used".
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run
 
 ```bash
-npm run reset-project
+npm install
+npx convex dev            # backend; first run sets up .env.local
+npx convex env set GEMINI_API_KEY <key>
+npx expo start            # i = iOS simulator, w = web
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+The current setup uses an anonymous **local** Convex backend (`127.0.0.1:3210`). That works for web, the iOS simulator and the Android emulator, but **not a physical phone**. For Expo Go on a phone, run `npx convex login` then `npx convex dev` to create a cloud dev deployment, and set `GEMINI_API_KEY` there.
 
-### Other setup steps
+## Where things live
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `convex/lib/questions.ts`: questions and options (shared by app and backend)
+- `convex/lib/policy.ts`: eligibility rules and voucher amounts
+- `convex/assessments.ts`: Gemini follow-ups and assessment
+- `convex/vouchers.ts`: issue, list, mark used, reset demo
+- `src/app/`: screens (`sign-in`, `(app)/home`, `check`, `result/[id]`, `wallet`, `voucher/[id]`)
+- `src/components/ui.tsx`: design system bits
