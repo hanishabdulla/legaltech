@@ -28,6 +28,12 @@
       ],
       "@convex/*": [
         "../convex/*"
+      ],
+      "convex/server": [
+        "./node_modules/convex/dist/esm-types/server/index.d.ts"
+      ],
+      "convex/values": [
+        "./node_modules/convex/dist/esm-types/values/index.d.ts"
       ]
     }
   },
