@@ -1,11 +1,7 @@
 /**
- * The eligibility questions. Shared by the app (to render them) and the
- * backend (to turn answers into plain English for the AI and the rules).
- *
- * Modelled on the information food bank referral forms and Household Support
- * Fund applications ask for: household, reason for crisis, income and
- * benefits, how much food is left, cooking facilities, dietary needs and
- * energy hardship.
+ * Option lists shared by the app (step-by-step form, chips) and the backend
+ * (fact validation, prompts). Modelled on what food bank referral forms and
+ * the Leeds Crisis Payment form ask for.
  */
 
 export type Option = { id: string; label: string; hint?: string };
@@ -30,7 +26,7 @@ export const BENEFITS: Option[] = [
   { id: 'housing_benefit', label: 'Housing Benefit' },
   { id: 'pip', label: 'PIP or Disability Living Allowance' },
   { id: 'child_benefit', label: 'Child Benefit' },
-  { id: 'council_tax_reduction', label: 'Council Tax Reduction' },
+  { id: 'council_tax_reduction', label: 'Council Tax Support' },
   { id: 'none', label: 'None of these' },
 ];
 
@@ -72,36 +68,3 @@ export const ENERGY: Option[] = [
   { id: 'struggling', label: 'I’m struggling to pay my energy bills' },
   { id: 'ok', label: 'My energy is OK for now' },
 ];
-
-export type Answers = {
-  adults: number;
-  children: number;
-  reasons: string[];
-  benefits: string[];
-  income: string;
-  foodAtHome: string;
-  cooking: string;
-  dietary: string[];
-  energy: string;
-  postcode: string;
-  story: string;
-};
-
-const label = (opts: Option[], id: string) => opts.find((o) => o.id === id)?.label ?? id;
-const labels = (opts: Option[], ids: string[]) => ids.map((id) => label(opts, id)).join('; ') || 'None given';
-
-/** Plain-English version of the answers, for the AI and for case notes. */
-export function describeAnswers(a: Answers) {
-  return [
-    `Household: ${a.adults} adult(s), ${a.children} child(ren)`,
-    `Postcode area: ${a.postcode || 'not given'}`,
-    `Why they need help: ${labels(REASONS, a.reasons)}`,
-    `Benefits received: ${labels(BENEFITS, a.benefits)}`,
-    `Household income after rent: ${label(INCOME, a.income)}`,
-    `Food at home: ${label(FOOD_AT_HOME, a.foodAtHome)}`,
-    `Cooking facilities: ${label(COOKING, a.cooking)}`,
-    `Dietary needs: ${labels(DIETARY, a.dietary)}`,
-    `Energy: ${label(ENERGY, a.energy)}`,
-    `In their own words: ${a.story.trim() || '(nothing added)'}`,
-  ].join('\n');
-}

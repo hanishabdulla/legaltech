@@ -16,9 +16,7 @@ function Navigator() {
     if (ready) SplashScreen.hideAsync();
   }, [ready]);
   if (!ready) return null;
-  return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: C.bg } }} />
-  );
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: C.bg } }} />;
 }
 
 export default function RootLayout() {

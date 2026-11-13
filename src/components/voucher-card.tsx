@@ -30,6 +30,7 @@ export function VoucherCard({ voucher, onPress, compact }: { voucher: Doc<'vouch
       <View style={{ gap: 2 }}>
         <T kind="label" style={{ color: 'rgba(255,255,255,0.9)' }}>{voucher.retailer}</T>
         <T style={[styles.value, compact && { fontSize: 34, lineHeight: 40 }]}>{money(voucher.valuePence)}</T>
+        <T kind="small" style={{ color: 'rgba(255,255,255,0.75)' }}>Illustrative amount</T>
       </View>
 
       <View style={styles.row}>

@@ -3,15 +3,17 @@ import { router } from 'expo-router';
 import { View } from 'react-native';
 
 import { VoucherCard } from '@/components/voucher-card';
-import { Button, Card, IconBubble, IconButton, Screen, T } from '@/components/ui';
+import { AiBadge, ClientHeader } from '@/components/client-chrome';
+import { Button, Card, IconBubble, Screen, T } from '@/components/ui';
 import { C, S } from '@/constants/theme';
 import { money, voucherStatus } from '@/lib/format';
-import { useUserId } from '@/lib/session';
+import { useSession } from '@/lib/session';
 import { api } from '@convex/_generated/api';
 
 export default function Wallet() {
-  const userId = useUserId();
-  const vouchers = useQuery(api.vouchers.list, { userId });
+  const { clientToken } = useSession();
+  const token = clientToken ?? '';
+  const vouchers = useQuery(api.vouchers.list, clientToken ? { token } : 'skip');
 
   const active = (vouchers ?? []).filter((v) => voucherStatus(v) === 'active').sort((a, b) => a.expiresAt - b.expiresAt);
   const past = (vouchers ?? []).filter((v) => voucherStatus(v) !== 'active');
@@ -19,12 +21,7 @@ export default function Wallet() {
 
   return (
     <Screen
-      header={
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: S.sm }}>
-          <IconButton name="arrow-back" label="Back" onPress={() => router.back()} />
-          <T kind="heading">Wallet</T>
-        </View>
-      }>
+      header={<ClientHeader title="Wallet" />}>
       <View style={{ gap: S.xl }}>
         <View style={{ gap: 2 }}>
           <T kind="caption">Available to spend</T>
@@ -32,20 +29,22 @@ export default function Wallet() {
           <T muted>
             {active.length ? `Across ${active.length} ${active.length === 1 ? 'voucher' : 'vouchers'}. Use the soonest to expire first.` : 'You have no active vouchers.'}
           </T>
+          <T kind="small" muted>Illustrative amounts for the demo. Vouchers only appear after an adviser approves.</T>
         </View>
 
         {vouchers !== undefined && vouchers.length === 0 ? (
           <Card style={{ alignItems: 'center', paddingVertical: S.xxl }}>
             <IconBubble name="wallet-outline" color={C.muted} bg={C.bg} size={56} />
             <T kind="label" center>Nothing here yet</T>
-            <T kind="small" muted center>Answer a few questions to see if you can get a voucher.</T>
-            <Button title="Check what I can get" onPress={() => router.push('/check')} style={{ alignSelf: 'stretch', marginTop: S.sm }} />
+            <T kind="small" muted center>Vouchers appear here once an adviser approves your referral.</T>
+            <Button title="Get help" onPress={() => router.push('/start')} style={{ alignSelf: 'stretch', marginTop: S.sm }} />
           </Card>
         ) : null}
 
         {active.length ? (
           <View style={{ gap: S.md }}>
             <T kind="heading">Active</T>
+            <AiBadge approved />
             {active.map((v) => (
               <VoucherCard key={v._id} voucher={v} onPress={() => router.push(`/voucher/${v._id}`)} />
             ))}

@@ -1,100 +1,71 @@
 import { ConvexError, v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+import type { Doc } from './_generated/dataModel';
+import { mutation, query, type MutationCtx } from './_generated/server';
+import { requireClient } from './lib/auth';
+import { DEMO_FOOD_VALID_DAYS, DEMO_FUEL_VALID_DAYS } from './lib/demoValues';
+import { demoVoucherValue, type SchemeId } from './lib/schemes';
 
 const DAY = 24 * 60 * 60 * 1000;
 export const FOOD_RETAILERS = ['Tesco', 'Asda', 'Sainsbury’s', 'Aldi', 'Lidl', 'Morrisons', 'Co-op'];
 
 function digits(n: number) {
-  let s = '';
-  for (let i = 0; i < n; i++) s += Math.floor(Math.random() * 10);
-  return s;
+  const bytes = new Uint8Array(n);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => String(b % 10)).join('');
 }
 
-/** Issues the vouchers for an eligible assessment. Safe to call twice. */
-export const claim = mutation({
-  args: { userId: v.id('users'), assessmentId: v.id('assessments'), retailer: v.string() },
-  handler: async (ctx, { userId, assessmentId, retailer }) => {
-    const assessment = await ctx.db.get(assessmentId);
-    if (!assessment || assessment.userId !== userId) throw new ConvexError('We couldn’t find that check.');
-    if (!assessment.decision.eligible) throw new ConvexError('This check didn’t qualify for a voucher.');
-    if (!FOOD_RETAILERS.includes(retailer)) throw new ConvexError('Please choose a supermarket.');
+/** Issues the demo voucher for an approved referral. Only called by the adviser approval. */
+export async function issueVoucherForReferral(ctx: MutationCtx, referral: Doc<'referrals'>, c: Doc<'cases'>) {
+  const scheme = referral.scheme as SchemeId;
+  if (scheme !== 'food_bank_referral' && scheme !== 'fuel_support') return null;
+  const existing = await ctx.db.query('vouchers').withIndex('by_caseId', (q) => q.eq('caseId', c._id)).take(10);
+  const found = existing.find((x) => x.referralId === referral._id);
+  if (found) return found._id;
 
-    const existing = await ctx.db
-      .query('vouchers')
-      .withIndex('by_assessment', (q) => q.eq('assessmentId', assessmentId))
-      .collect();
-    if (existing.length) return existing.find((x) => x.kind === 'food')?._id ?? existing[0]._id;
-
-    const now = Date.now();
-    const foodId = await ctx.db.insert('vouchers', {
-      userId,
-      assessmentId,
-      kind: 'food',
-      retailer,
-      valuePence: assessment.decision.foodValuePence,
-      code: `6340${digits(12)}`,
-      pin: digits(4),
-      issuedAt: now,
-      expiresAt: now + 30 * DAY,
-    });
-
-    if (assessment.decision.fuelValuePence > 0) {
-      await ctx.db.insert('vouchers', {
-        userId,
-        assessmentId,
-        kind: 'fuel',
-        retailer: 'Prepayment meter top-up',
-        valuePence: assessment.decision.fuelValuePence,
-        code: `9826${digits(16)}`,
-        pin: digits(4),
-        issuedAt: now,
-        expiresAt: now + 90 * DAY,
-      });
-    }
-    return foodId;
-  },
-});
+  const now = Date.now();
+  const food = scheme === 'food_bank_referral';
+  const retailer = food ? (FOOD_RETAILERS.includes(c.retailer ?? '') ? c.retailer! : 'Tesco') : 'Prepayment meter top-up';
+  return await ctx.db.insert('vouchers', {
+    clientId: c.clientId,
+    caseId: c._id,
+    referralId: referral._id,
+    kind: food ? 'food' : 'fuel',
+    retailer,
+    valuePence: demoVoucherValue(scheme, c.facts),
+    code: food ? `6340${digits(12)}` : `9826${digits(16)}`,
+    pin: digits(4),
+    issuedAt: now,
+    expiresAt: now + (food ? DEMO_FOOD_VALID_DAYS : DEMO_FUEL_VALID_DAYS) * DAY,
+  });
+}
 
 export const list = query({
-  args: { userId: v.id('users') },
-  handler: async (ctx, { userId }) => {
-    const all = await ctx.db
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    const client = await requireClient(ctx, token);
+    return await ctx.db
       .query('vouchers')
-      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .withIndex('by_clientId', (q) => q.eq('clientId', client._id))
       .order('desc')
-      .collect();
-    return all;
+      .take(50);
   },
 });
 
 export const get = query({
-  args: { userId: v.id('users'), voucherId: v.id('vouchers') },
-  handler: async (ctx, { userId, voucherId }) => {
+  args: { token: v.string(), voucherId: v.id('vouchers') },
+  handler: async (ctx, { token, voucherId }) => {
+    const client = await requireClient(ctx, token);
     const voucher = await ctx.db.get(voucherId);
-    if (!voucher || voucher.userId !== userId) return null;
-    return voucher;
+    return voucher && voucher.clientId === client._id ? voucher : null;
   },
 });
 
 export const setUsed = mutation({
-  args: { userId: v.id('users'), voucherId: v.id('vouchers'), used: v.boolean() },
-  handler: async (ctx, { userId, voucherId, used }) => {
+  args: { token: v.string(), voucherId: v.id('vouchers'), used: v.boolean() },
+  handler: async (ctx, { token, voucherId, used }) => {
+    const client = await requireClient(ctx, token);
     const voucher = await ctx.db.get(voucherId);
-    if (!voucher || voucher.userId !== userId) throw new ConvexError('Voucher not found.');
+    if (!voucher || voucher.clientId !== client._id) throw new ConvexError('Voucher not found.');
     await ctx.db.patch(voucherId, { usedAt: used ? Date.now() : undefined });
-  },
-});
-
-/** Demo helper: wipes this person's checks and vouchers so the flow can be shown again. */
-export const resetDemo = mutation({
-  args: { userId: v.id('users') },
-  handler: async (ctx, { userId }) => {
-    for (const table of ['vouchers', 'assessments'] as const) {
-      const rows = await ctx.db
-        .query(table)
-        .withIndex('by_user', (q) => q.eq('userId', userId))
-        .collect();
-      for (const row of rows) await ctx.db.delete(row._id);
-    }
   },
 });

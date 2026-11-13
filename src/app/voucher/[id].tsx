@@ -5,27 +5,24 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 import { StatusPill } from '@/components/voucher-card';
-import { Banner, Button, Card, IconButton, Ionicons, Screen, T } from '@/components/ui';
+import { ClientHeader } from '@/components/client-chrome';
+import { Banner, Button, Card, Ionicons, Screen, T } from '@/components/ui';
 import { C, R, RETAILER_COLORS, S } from '@/constants/theme';
 import { daysLeft, groupCode, longDate, money, voucherStatus } from '@/lib/format';
-import { useUserId } from '@/lib/session';
+import { useSession } from '@/lib/session';
 import { api } from '@convex/_generated/api';
 import type { Id } from '@convex/_generated/dataModel';
 
 export default function VoucherDetail() {
   const { id, fresh } = useLocalSearchParams<{ id: string; fresh?: string }>();
-  const userId = useUserId();
-  const voucher = useQuery(api.vouchers.get, { userId, voucherId: id as Id<'vouchers'> });
+  const { clientToken } = useSession();
+  const token = clientToken ?? '';
+  const voucher = useQuery(api.vouchers.get, clientToken ? { token, voucherId: id as Id<'vouchers'> } : 'skip');
   const setUsed = useMutation(api.vouchers.setUsed);
   const [showPin, setShowPin] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  const header = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: S.sm }}>
-      <IconButton name="arrow-back" label="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/wallet'))} />
-      <T kind="heading">Voucher</T>
-    </View>
-  );
+  const header = <ClientHeader title="Voucher" onBack={() => (router.canGoBack() ? router.back() : router.replace('/wallet'))} />;
 
   if (voucher === undefined) {
     return (
@@ -50,7 +47,7 @@ export default function VoucherDetail() {
 
   async function toggleUsed() {
     setBusy(true);
-    await setUsed({ userId, voucherId: voucher!._id, used: status !== 'used' }).finally(() => setBusy(false));
+    await setUsed({ token, voucherId: voucher!._id, used: status !== 'used' }).finally(() => setBusy(false));
   }
 
   return (
@@ -112,7 +109,7 @@ export default function VoucherDetail() {
           <Detail label="Issued" value={longDate(voucher.issuedAt)} />
           <Detail label="Valid until" value={longDate(voucher.expiresAt)} strong={status === 'active'} />
           {voucher.usedAt ? <Detail label="Marked used" value={longDate(voucher.usedAt)} /> : null}
-          <Detail label="Value" value={money(voucher.valuePence)} last />
+          <Detail label="Value (illustrative)" value={money(voucher.valuePence)} last />
         </Card>
 
         <View style={{ gap: S.md }}>
@@ -137,7 +134,7 @@ export default function VoucherDetail() {
           ))}
         </View>
 
-        <T kind="small" muted center>Demo voucher. It can’t be used in a real shop.</T>
+        <T kind="small" muted center>Demo voucher with an illustrative amount. It can’t be used in a real shop.</T>
       </View>
     </Screen>
   );

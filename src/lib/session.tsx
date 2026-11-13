@@ -1,41 +1,60 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import type { Id } from '@convex/_generated/dataModel';
 
-const KEY = 'common-counsel.userId';
+const CLIENT_KEY = 'cc.clientToken';
+const STAFF_KEY = 'cc.staffToken';
 
+/**
+ * Two independent demo sessions on one device: an anonymous client and an
+ * adviser. Both are random secrets issued by Convex; only their hashes are stored there.
+ */
 type Session = {
   ready: boolean;
-  userId: Id<'users'> | null;
-  setUser: (id: Id<'users'>) => Promise<void>;
-  signOut: () => Promise<void>;
+  clientToken: string | null;
+  staffToken: string | null;
+  setClientToken: (t: string | null) => Promise<void>;
+  setStaffToken: (t: string | null) => Promise<void>;
 };
 
 const SessionContext = createContext<Session | null>(null);
 
+async function persist(key: string, value: string | null) {
+  try {
+    if (value) await AsyncStorage.setItem(key, value);
+    else await AsyncStorage.removeItem(key);
+  } catch {
+    // Storage can be unavailable (private browsing). The session just won't survive a reload.
+  }
+}
+
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
-  const [userId, setUserId] = useState<Id<'users'> | null>(null);
+  const [clientToken, setClient] = useState<string | null>(null);
+  const [staffToken, setStaff] = useState<string | null>(null);
 
   useEffect(() => {
-    AsyncStorage.getItem(KEY)
-      .then((id) => setUserId(id as Id<'users'> | null))
+    Promise.all([AsyncStorage.getItem(CLIENT_KEY), AsyncStorage.getItem(STAFF_KEY)])
+      .then(([c, s]) => {
+        setClient(c);
+        setStaff(s);
+      })
       .catch(() => {})
       .finally(() => setReady(true));
   }, []);
 
-  const setUser = useCallback(async (id: Id<'users'>) => {
-    setUserId(id);
-    await AsyncStorage.setItem(KEY, id).catch(() => {});
+  const setClientToken = useCallback(async (t: string | null) => {
+    setClient(t);
+    await persist(CLIENT_KEY, t);
   }, []);
-
-  const signOut = useCallback(async () => {
-    setUserId(null);
-    await AsyncStorage.removeItem(KEY).catch(() => {});
+  const setStaffToken = useCallback(async (t: string | null) => {
+    setStaff(t);
+    await persist(STAFF_KEY, t);
   }, []);
 
   return (
-    <SessionContext.Provider value={{ ready, userId, setUser, signOut }}>{children}</SessionContext.Provider>
+    <SessionContext.Provider value={{ ready, clientToken, staffToken, setClientToken, setStaffToken }}>
+      {children}
+    </SessionContext.Provider>
   );
 }
 
@@ -43,11 +62,4 @@ export function useSession() {
   const ctx = useContext(SessionContext);
   if (!ctx) throw new Error('useSession must be used inside SessionProvider');
   return ctx;
-}
-
-/** For screens behind sign-in: the layout guarantees a user. */
-export function useUserId() {
-  const { userId } = useSession();
-  if (!userId) throw new Error('Not signed in');
-  return userId;
 }
